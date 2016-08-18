@@ -3,6 +3,7 @@ package com.civfactions.SabreCore;
 import java.io.File;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Server;
@@ -12,17 +13,24 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.civfactions.SabreApi.IChatChannel;
 import com.civfactions.SabreApi.IPlayer;
+import com.civfactions.SabreApi.PlayerWrapper;
 import com.civfactions.SabreApi.SabreApi;
+import com.civfactions.SabreApi.chat.ChatModule;
 import com.civfactions.SabreApi.data.DataAccess;
+import com.civfactions.SabreApi.data.StoredValue;
 import com.civfactions.SabreCore.chat.GlobalChat;
+import com.civfactions.SabreCore.data.ClassStorage;
+import com.civfactions.SabreCore.data.MongoStorage;
 import com.civfactions.SabreCore.util.TextUtil;
 
 public class SabreCore extends JavaPlugin implements SabreApi {
 	
 	private final TextUtil textUtil = new TextUtil();
 	private final DataStorage storage = new MongoStorage();
-	private final PlayerManager pm = new PlayerManager(this, storage);
+	private final ClassStorage playerStorage = new ClassStorage();
+	private final PlayerManager pm = new PlayerManager(this, storage, playerStorage);
 	private final GlobalChat globalChat = new GlobalChat(this);
+	private final ChatModule chatModule = new ChatModule();
 	
 	
     /**
@@ -40,6 +48,9 @@ public class SabreCore extends JavaPlugin implements SabreApi {
 	
 	@Override
 	public void onEnable() {
+		playerStorage.register(new StoredValue<IChatChannel>("chatChannel", globalChat));
+		playerStorage.register(new StoredValue<IPlayer>("lastPlayerMessaged", null));
+		
 		
 	}
 	
@@ -64,8 +75,19 @@ public class SabreCore extends JavaPlugin implements SabreApi {
 	}
 
 	@Override
-	public Collection<IPlayer> getOnlinePlayers() {
-		return pm.getOnlinePlayers();
+	public <T extends PlayerWrapper> Collection<T> getOnlinePlayers() {
+		//return pm.getOnlinePlayers();
+		return null; // TODO
+	}
+
+	@Override
+	public <T extends PlayerWrapper> T getPlayer(String name) {
+		return null;  // TODO
+	}
+
+	@Override
+	public <T extends PlayerWrapper> T getPlayer(UUID uid) {
+		return null; // TODO
 	}
 
 	@Override

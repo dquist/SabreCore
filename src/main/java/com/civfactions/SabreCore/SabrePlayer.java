@@ -16,9 +16,11 @@ import org.bukkit.entity.Player;
 import com.civfactions.SabreApi.IPlayer;
 import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.SabreApi;
+import com.civfactions.SabreApi.data.ConfigurationObject;
 import com.civfactions.SabreApi.IChatChannel;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.Permission;
+import com.civfactions.SabreCore.data.ClassStorage;
 
 /**
  * Represents a player that has joined the server and may or may not be online
@@ -64,12 +66,15 @@ public class SabrePlayer implements IPlayer {
 	private final Set<IPlayer> ignoredPlayers;
 	
 	
+	private final ClassStorage dataStore;
+	
+	
 	/**
 	 * Creates a new SabrePlayer instance
 	 * @param uid The player's ID
 	 * @param name The player's display name
 	 */
-	public SabrePlayer(SabreApi sabreApi, PlayerManager playerManager, UUID uid, String name) {
+	public SabrePlayer(SabreApi sabreApi, PlayerManager playerManager, ClassStorage dataStore, UUID uid, String name) {
 		Guard.ArgumentNotNull(playerManager, "playerManager");
 		Guard.ArgumentNotNull(uid, "uid");
 		Guard.ArgumentNotNullOrEmpty(name, "name");
@@ -88,6 +93,27 @@ public class SabrePlayer implements IPlayer {
 		this.offlineMessages = new ArrayList<String>();
 		this.vanished = false;
 		this.ignoredPlayers = new HashSet<IPlayer>();
+		
+		this.dataStore = dataStore;
+	}
+	
+	
+
+	@Override
+	public String getConfigurationKey() {
+		return "players";
+	}
+	
+	
+	@Override
+	public void loadConfiguration(ConfigurationObject config) {
+		
+	}
+	
+	
+	@Override
+	public void saveConfiguration(ConfigurationObject config) {
+		
 	}
 	
 	
@@ -125,6 +151,16 @@ public class SabrePlayer implements IPlayer {
 			player.setCustomName(name);
 			player.setPlayerListName(name);
 		}
+	}
+	
+	
+	/**
+	 * Gets the player instance
+	 * @return The player instance
+	 */
+	@Override
+	public IPlayer getPlayer() {
+		return this;
 	}
 	
 	
@@ -540,5 +576,19 @@ public class SabrePlayer implements IPlayer {
 			return player.teleport(location);
 		}
 		return false;
+	}
+
+
+
+	@Override
+	public <T> T getDataValue(String key) {
+		return dataStore.getDataValue(key);
+	}
+
+
+
+	@Override
+	public <T> void setDataValue(String key, T value) {
+		dataStore.setDataValue(key, value);
 	}
 }

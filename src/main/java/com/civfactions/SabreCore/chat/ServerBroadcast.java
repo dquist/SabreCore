@@ -32,7 +32,7 @@ public class ServerBroadcast implements IChatChannel, IConfigurable {
 		
 		String formatted = sabreApi.formatText(strings.get(strBcastChat), senderName, msg);
 		
-		for (IPlayer p : sabreApi.getOnlinePlayers()) {
+		for (IPlayer p : sabreApi.<IPlayer>getOnlinePlayers()) {
 			p.msg(formatted);
 		}
 	}
@@ -43,7 +43,7 @@ public class ServerBroadcast implements IChatChannel, IConfigurable {
 		String senderName = sender.getName();
 		String formatted = sabreApi.formatText(strings.get(strBcastChatMe), senderName, msg);
 		
-		for (IPlayer p : sabreApi.getOnlinePlayers()) {
+		for (IPlayer p : sabreApi.<IPlayer>getOnlinePlayers()) {
 			p.msg(formatted);
 		}
 	}

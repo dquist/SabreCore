@@ -42,7 +42,7 @@ public class GlobalChat implements IChatChannel, IConfigurable {
 		String formatted = sabreApi.formatText("<w>%s: %s", senderName, msg);
 		sabreApi.log(Level.INFO, formatted);
 		
-		for (IPlayer p : sabreApi.getOnlinePlayers()) {
+		for (IPlayer p : sabreApi.<IPlayer>getOnlinePlayers()) {
 			int distance = p.getDistanceFrom(sender);
 			if (distance >=0 && distance <= chatRadius && p.getBukkitPlayer().getWorld().equals(sender.getBukkitPlayer().getWorld())) {
 				p.msg(formatted);
@@ -66,7 +66,7 @@ public class GlobalChat implements IChatChannel, IConfigurable {
 		boolean found = false;
 		String formatted = sabreApi.formatText("<silver><it>%s %s", senderName, msg);
 		
-		for (IPlayer p : sabreApi.getOnlinePlayers()) {
+		for (IPlayer p : sabreApi.<IPlayer>getOnlinePlayers()) {
 			int distance = p.getDistanceFrom(sender);
 			if (distance >=0 && distance <= chatRadius && p.getBukkitPlayer().getWorld().equals(sender.getBukkitPlayer().getWorld())) {
 				p.msg(formatted);
