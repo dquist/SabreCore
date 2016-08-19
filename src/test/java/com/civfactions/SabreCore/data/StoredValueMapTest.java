@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import com.civfactions.SabreApi.SabrePlayer;
 
-public class ClassStorageTest {
+public class StoredValueMapTest {
 
 	private StoredValueMap storage;
 	

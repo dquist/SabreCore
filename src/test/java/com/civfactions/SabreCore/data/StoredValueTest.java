@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.civfactions.SabreApi.chat.ChatPlayer;
 
 @SuppressWarnings("unchecked")
-public class CoreStoredValueTest {
+public class StoredValueTest {
 
 	@Test
 	public void testCoreStoredValue() {
