@@ -176,4 +176,11 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 			sender.msg(Lang.chatMovedGlobal, this.getName());
 		}
 	}
+	
+	public static ChatPlayerWrapper create(SabrePlayer player, ChatModule module) {
+		if (player == null) {
+			return null;
+		}
+		return new ChatPlayerWrapper(player, module);
+	}
 }

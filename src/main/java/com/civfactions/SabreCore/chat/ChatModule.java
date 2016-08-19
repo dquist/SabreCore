@@ -65,11 +65,7 @@ public class ChatModule extends SabreModule {
 	 * @return The wrapper ChatPlayer if it exists, otherwise null
 	 */
 	public ChatPlayer getPlayer(String name) {
-		SabrePlayer p = sabreApi.getPlayer(name);
-		if (p == null) {
-			return null;
-		}
-		return new ChatPlayerWrapper(p, this);
+		return wrapPlayer(sabreApi.getPlayer(name));
 	}
 	
 	
@@ -79,10 +75,21 @@ public class ChatModule extends SabreModule {
 	 * @return The wrapper ChatPlayer if it exists, otherwise null
 	 */
 	public ChatPlayer getPlayer(UUID uid) {
-		SabrePlayer p = sabreApi.getPlayer(uid);
-		if (p == null) {
+		return wrapPlayer(sabreApi.getPlayer(uid));
+	}
+	
+
+	
+	
+	/**
+	 * Gets a player wrapped as a ChatPlayer
+	 * @param name The name of the player
+	 * @return The wrapper ChatPlayer if it exists, otherwise null
+	 */
+	public ChatPlayer wrapPlayer(SabrePlayer player) {
+		if (player == null) {
 			return null;
 		}
-		return new ChatPlayerWrapper(p, this);
+		return new ChatPlayerWrapper(player, this);
 	}
 }
