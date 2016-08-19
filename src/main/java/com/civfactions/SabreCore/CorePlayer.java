@@ -13,11 +13,11 @@ import java.util.logging.Level;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.civfactions.SabreApi.IPlayer;
+import com.civfactions.SabreApi.SabrePlayer;
+import com.civfactions.SabreApi.chat.ChatChannel;
 import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.data.ConfigurationObject;
-import com.civfactions.SabreApi.IChatChannel;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.Permission;
 import com.civfactions.SabreCore.data.ClassStorage;
@@ -26,7 +26,7 @@ import com.civfactions.SabreCore.data.ClassStorage;
  * Represents a player that has joined the server and may or may not be online
  * @author GFQ
  */
-public class SabrePlayer implements IPlayer {
+public class CorePlayer implements SabrePlayer {
 	
 	private final SabreApi sabreApi;
 	private final PlayerManager pm;
@@ -48,10 +48,10 @@ public class SabrePlayer implements IPlayer {
 	private String banMessage;
 	
 	// The current chat channel
-	private IChatChannel chatChannel;
+	private ChatChannel chatChannel;
 	
 	// The player last messaged, used for replying
-	private IPlayer lastMessaged;
+	private SabrePlayer lastMessaged;
 	
 	// Pending offline messages for the player
 	private List<String> offlineMessages;
@@ -63,7 +63,7 @@ public class SabrePlayer implements IPlayer {
 	private Location bedLocation;
 	
 	// Other players that are being ignored by this player
-	private final Set<IPlayer> ignoredPlayers;
+	private final Set<SabrePlayer> ignoredPlayers;
 	
 	
 	private final ClassStorage dataStore;
@@ -74,7 +74,7 @@ public class SabrePlayer implements IPlayer {
 	 * @param uid The player's ID
 	 * @param name The player's display name
 	 */
-	public SabrePlayer(SabreApi sabreApi, PlayerManager playerManager, ClassStorage dataStore, UUID uid, String name) {
+	public CorePlayer(SabreApi sabreApi, PlayerManager playerManager, ClassStorage dataStore, UUID uid, String name) {
 		Guard.ArgumentNotNull(playerManager, "playerManager");
 		Guard.ArgumentNotNull(uid, "uid");
 		Guard.ArgumentNotNullOrEmpty(name, "name");
@@ -92,7 +92,7 @@ public class SabrePlayer implements IPlayer {
 		this.banMessage = "";
 		this.offlineMessages = new ArrayList<String>();
 		this.vanished = false;
-		this.ignoredPlayers = new HashSet<IPlayer>();
+		this.ignoredPlayers = new HashSet<SabrePlayer>();
 		
 		this.dataStore = dataStore;
 	}
@@ -159,7 +159,7 @@ public class SabrePlayer implements IPlayer {
 	 * @return The player instance
 	 */
 	@Override
-	public IPlayer getPlayer() {
+	public SabrePlayer getPlayer() {
 		return this;
 	}
 	
@@ -282,7 +282,7 @@ public class SabrePlayer implements IPlayer {
 	 * @return The current chat channel
 	 */
 	@Override
-	public IChatChannel getChatChannel() {
+	public ChatChannel getChatChannel() {
 		return this.chatChannel;
 	}
 	
@@ -292,7 +292,7 @@ public class SabrePlayer implements IPlayer {
 	 * @param chatChannel The new chat channel
 	 */
 	@Override
-	public void setChatChannel(IChatChannel chatChannel) {
+	public void setChatChannel(ChatChannel chatChannel) {
 		Guard.ArgumentNotNull(chatChannel, "chatChannel");
 		Guard.ArgumentNotEquals(chatChannel, "chatChannel", this, "self");
 		
@@ -314,7 +314,7 @@ public class SabrePlayer implements IPlayer {
 	 * @return The last messaged player
 	 */
 	@Override
-	public IPlayer getLastMessaged() {
+	public SabrePlayer getLastMessaged() {
 		return this.lastMessaged;
 	}
 	
@@ -324,7 +324,7 @@ public class SabrePlayer implements IPlayer {
 	 * @param lastMessaged The last messaged player
 	 */
 	@Override
-	public void setLastMessaged(IPlayer lastMessaged) {		
+	public void setLastMessaged(SabrePlayer lastMessaged) {		
 		this.lastMessaged = lastMessaged;
 	}
 	
@@ -392,7 +392,7 @@ public class SabrePlayer implements IPlayer {
 	 * @param msg The message
 	 */
 	@Override
-	public void chat(IPlayer sender, String msg) {
+	public void chat(SabrePlayer sender, String msg) {
 		Guard.ArgumentNotNull(sender, "sender");
 		Guard.ArgumentNotNull(msg, "msg");
 		
@@ -427,7 +427,7 @@ public class SabrePlayer implements IPlayer {
 	
 	
 	@Override
-	public void chatMe(IPlayer sender, String msg) {		
+	public void chatMe(SabrePlayer sender, String msg) {		
 		Guard.ArgumentNotNull(sender, "sender");
 		Guard.ArgumentNotNull(msg, "msg");
 		
@@ -450,7 +450,7 @@ public class SabrePlayer implements IPlayer {
 	 * @return The distance the players are away from each other
 	 */
 	@Override
-	public int getDistanceFrom(IPlayer other) {
+	public int getDistanceFrom(SabrePlayer other) {
 		Guard.ArgumentNotNull(other, "other");
 		
 		if (!isOnline() || !other.isOnline()) {
@@ -532,7 +532,7 @@ public class SabrePlayer implements IPlayer {
 	 * @param ignored The ignored status
 	 */
 	@Override
-	public void setIgnored(IPlayer sp, boolean ignored) {
+	public void setIgnored(SabrePlayer sp, boolean ignored) {
 		Guard.ArgumentNotNull(sp, "sp");
 		
 		if (ignored && !ignoredPlayers.contains(sp)) {
@@ -548,7 +548,7 @@ public class SabrePlayer implements IPlayer {
 	 * @return Whether the player is ignored
 	 */
 	@Override
-	public boolean isIgnoring(IPlayer sp) {
+	public boolean isIgnoring(SabrePlayer sp) {
 		Guard.ArgumentNotNull(sp, "sp");
 		
 		return ignoredPlayers.contains(sp);

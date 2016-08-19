@@ -6,6 +6,6 @@ import com.civfactions.SabreApi.data.DataAccess;
 
 public interface DataStorage extends DataAccess {
 	
-	Collection<SabrePlayer> playersReadAll();
+	Collection<CorePlayer> playersReadAll();
 
 }

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
-import com.civfactions.SabreApi.IPlayer;
+import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreCore.data.ClassStorage;
@@ -25,8 +25,8 @@ public class PlayerManager {
 	private final DataStorage db;
 	private final ClassStorage playerStorage;
 	
-	private final HashMap<UUID, SabrePlayer> players;
-	private final HashMap<UUID, SabrePlayer> onlinePlayers;
+	private final HashMap<UUID, CorePlayer> players;
+	private final HashMap<UUID, CorePlayer> onlinePlayers;
 	
 	/**
 	 * Creates a new PlayerManager instance 
@@ -40,8 +40,8 @@ public class PlayerManager {
 		this.db = dataStorage;
 		this.playerStorage = playerStorage;
 		
-		this.players = new HashMap<UUID, SabrePlayer>();
-		this.onlinePlayers = new HashMap<UUID, SabrePlayer>();
+		this.players = new HashMap<UUID, CorePlayer>();
+		this.onlinePlayers = new HashMap<UUID, CorePlayer>();
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public class PlayerManager {
 	public void load() {
 		this.players.clear();
 		
-		for (SabrePlayer p : db.playersReadAll()) {
+		for (CorePlayer p : db.playersReadAll()) {
 			this.players.put(p.getUniqueId(), p);
 		}
 	}
@@ -60,7 +60,7 @@ public class PlayerManager {
 	 * Removes a player from all records
 	 * @param player The player to remove
 	 */
-	public void removePlayer(IPlayer player) {
+	public void removePlayer(SabrePlayer player) {
 		Guard.ArgumentNotNull(player, "player");
 		assertValidPlayer(player);
 		
@@ -76,11 +76,11 @@ public class PlayerManager {
 	 * @param id The ID of the player
 	 * @return The player instance if it exists
 	 */
-	public IPlayer getPlayerById(UUID uid) {
+	public SabrePlayer getPlayerById(UUID uid) {
 		Guard.ArgumentNotNull(uid, "uid");
 		
 		// Check online players first
-		SabrePlayer p = onlinePlayers.get(uid);
+		CorePlayer p = onlinePlayers.get(uid);
 		if (p == null) {
 			p = players.get(uid);
 		}
@@ -93,18 +93,18 @@ public class PlayerManager {
 	 * @param id The name of the player
 	 * @return The player instance if it exists
 	 */
-	public IPlayer getPlayerByName(String name) {
+	public SabrePlayer getPlayerByName(String name) {
 		Guard.ArgumentNotNullOrEmpty(name, "name");
 		
 		// Check online players first
-		for (SabrePlayer p : onlinePlayers.values()) {
+		for (CorePlayer p : onlinePlayers.values()) {
 			if (p.getName().equalsIgnoreCase(name)) {
 				return p;
 			}
 		}
 		
 		// Then check all players
-		for (SabrePlayer p : players.values()) {
+		for (CorePlayer p : players.values()) {
 			if (p.getName().equalsIgnoreCase(name)) {
 				return p;
 			}
@@ -119,12 +119,12 @@ public class PlayerManager {
 	 * @param player The bukkit player
 	 * @return The new SabrePlayer instance
 	 */
-	public IPlayer createNewPlayer(Player player) {
+	public SabrePlayer createNewPlayer(Player player) {
 		Guard.ArgumentNotNull(player, "player");
 		
 		String originalName = player.getName();
 		String name = originalName;
-		IPlayer sp = getPlayerByName(originalName);
+		SabrePlayer sp = getPlayerByName(originalName);
 		
 		// If there is a conflict, add numbers to the end to get a name
 		// that hasn't been used before
@@ -135,7 +135,7 @@ public class PlayerManager {
 		}
 		
 		// Now we should have a unique name for the new player
-		SabrePlayer sPlayer = new SabrePlayer(sabreApi, this, playerStorage, player.getUniqueId(), name);
+		CorePlayer sPlayer = new CorePlayer(sabreApi, this, playerStorage, player.getUniqueId(), name);
 		//sPlayer.setPlayer(player); TODO
 		sPlayer.setFirstLogin(new Date());
 		sPlayer.setName(name);
@@ -150,11 +150,11 @@ public class PlayerManager {
 	 * @param p The player to validate
 	 * @return The matching SabrePlayer instance
 	 */
-	private SabrePlayer assertValidPlayer(IPlayer p) {
+	private CorePlayer assertValidPlayer(SabrePlayer p) {
 		UUID uid = p.getUniqueId();
 		
 		// Check online players first
-		SabrePlayer player = onlinePlayers.get(uid);
+		CorePlayer player = onlinePlayers.get(uid);
 		
 		// Then check all players
 		if (player == null) {
@@ -168,14 +168,14 @@ public class PlayerManager {
 		return player;
 	}
 
-	public Collection<IPlayer> getAllPlayers() {
-		Set<IPlayer> players = this.players.values().stream().map(p -> (IPlayer)p).collect(Collectors.toSet());
+	public Collection<SabrePlayer> getAllPlayers() {
+		Set<SabrePlayer> players = this.players.values().stream().map(p -> (SabrePlayer)p).collect(Collectors.toSet());
 		return Collections.unmodifiableSet(players);
 	}
 
 
-	public Collection<IPlayer> getOnlinePlayers() {
-		Set<IPlayer> onlinePlayers = this.onlinePlayers.values().stream().map(p -> (IPlayer)p).collect(Collectors.toSet());
+	public Collection<SabrePlayer> getOnlinePlayers() {
+		Set<SabrePlayer> onlinePlayers = this.onlinePlayers.values().stream().map(p -> (SabrePlayer)p).collect(Collectors.toSet());
 		return Collections.unmodifiableSet(onlinePlayers);
 	}
 
