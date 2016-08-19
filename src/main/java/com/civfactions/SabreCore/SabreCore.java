@@ -5,13 +5,11 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import com.civfactions.SabreApi.IChatChannel;
 import com.civfactions.SabreApi.PlayerWrapper;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.SabrePlugin;
-import com.civfactions.SabreApi.chat.ChatModule;
 import com.civfactions.SabreApi.data.DataAccess;
-import com.civfactions.SabreCore.chat.GlobalChat;
+import com.civfactions.SabreCore.chat.ChatModule;
 import com.civfactions.SabreCore.data.ClassStorage;
 import com.civfactions.SabreCore.data.MongoStorage;
 import com.civfactions.SabreCore.util.TextUtil;
@@ -24,8 +22,8 @@ public class SabreCore implements SabreApi {
 	private final DataStorage storage = new MongoStorage();
 	private final ClassStorage playerStorage = new ClassStorage();
 	private final PlayerManager pm = new PlayerManager(this, storage, playerStorage);
-	private final GlobalChat globalChat = new GlobalChat(this);
-	private final ChatModule chatModule = new ChatModule();
+	
+	private final ChatModule chatModule = new ChatModule(this);
 	
 	public SabreCore(SabrePlugin plugin) {
 		this.plugin = plugin;
@@ -39,11 +37,6 @@ public class SabreCore implements SabreApi {
 	@Override
 	public Date getTimeNow() {
 		return new Date();
-	}
-
-	@Override
-	public IChatChannel getGlobalChat() {
-		return globalChat;
 	}
 
 	@Override

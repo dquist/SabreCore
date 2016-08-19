@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
-import com.civfactions.SabreApi.INamed;
+import com.civfactions.SabreApi.Named;
 
 public class TextUtil
 {	
@@ -320,14 +320,14 @@ public class TextUtil
 	// -------------------------------------------- //
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends INamed> T getBestNamedMatch(Iterable<? extends INamed> candidates, String start, String exclude)
+	public static <T extends Named> T getBestNamedMatch(Iterable<? extends Named> candidates, String start, String exclude)
 	{
-		INamed ret = null;
+		Named ret = null;
 		int best = 0;
 		
 		start = start.toLowerCase();
 		int minlength = start.length();
-		for (INamed candidate : candidates)
+		for (Named candidate : candidates)
 		{
 			String name = candidate.getName();
 			if (name.equals(exclude)) continue;

@@ -1,21 +1,17 @@
 package com.civfactions.SabreCore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.civfactions.SabreApi.SabrePlayer;
-import com.civfactions.SabreApi.chat.ChatChannel;
-import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.data.ConfigurationObject;
 import com.civfactions.SabreApi.util.Guard;
@@ -38,7 +34,7 @@ public class CorePlayer implements SabrePlayer {
 	private String name;
 	
 	// The Bukkit player instance
-	private Player player;
+	private Player bukkitPlayer;
 	
 	// Login and play time data
 	private Date firstLogin;
@@ -46,12 +42,6 @@ public class CorePlayer implements SabrePlayer {
 	private long playTime;
 	private boolean banned;
 	private String banMessage;
-	
-	// The current chat channel
-	private ChatChannel chatChannel;
-	
-	// The player last messaged, used for replying
-	private SabrePlayer lastMessaged;
 	
 	// Pending offline messages for the player
 	private List<String> offlineMessages;
@@ -86,8 +76,6 @@ public class CorePlayer implements SabrePlayer {
 		this.firstLogin = sabreApi.getTimeNow();
 		this.lastLogin = sabreApi.getTimeNow();
 		this.playTime = 0;
-		this.chatChannel = sabreApi.getGlobalChat();
-		this.lastMessaged = null;
 		this.banned = false;
 		this.banMessage = "";
 		this.offlineMessages = new ArrayList<String>();
@@ -97,23 +85,12 @@ public class CorePlayer implements SabrePlayer {
 		this.dataStore = dataStore;
 	}
 	
-	
-
-	@Override
-	public String getConfigurationKey() {
-		return "players";
-	}
-	
-	
-	@Override
-	public void loadConfiguration(ConfigurationObject config) {
-		
-	}
-	
-	
-	@Override
-	public void saveConfiguration(ConfigurationObject config) {
-		
+	/**
+	 * Gets the Sabre API
+	 * @return The Sabre API
+	 */
+	public SabreApi getSabreApi() {
+		return sabreApi;
 	}
 	
 	
@@ -146,21 +123,11 @@ public class CorePlayer implements SabrePlayer {
 		
 		this.name = name;
 		
-		if (player != null) {
-			player.setDisplayName(name);
-			player.setCustomName(name);
-			player.setPlayerListName(name);
+		if (bukkitPlayer != null) {
+			bukkitPlayer.setDisplayName(name);
+			bukkitPlayer.setCustomName(name);
+			bukkitPlayer.setPlayerListName(name);
 		}
-	}
-	
-	
-	/**
-	 * Gets the player instance
-	 * @return The player instance
-	 */
-	@Override
-	public SabrePlayer getPlayer() {
-		return this;
 	}
 	
 	
@@ -170,17 +137,17 @@ public class CorePlayer implements SabrePlayer {
 	 */
 	@Override
 	public Player getBukkitPlayer() {
-		return this.player;
+		return this.bukkitPlayer;
 	}
 	
 	
 	/**
 	 * Sets the player instance
-	 * @param player The player instance
+	 * @param bukkitPlayer The player instance
 	 */
 	@Override
-	public void setBukkitPlayer(Player player) {
-		this.player = player;
+	public void setBukkitPlayer(Player bukkitPlayer) {
+		this.bukkitPlayer = bukkitPlayer;
 	}
 	
 	
@@ -190,7 +157,7 @@ public class CorePlayer implements SabrePlayer {
 	 */
 	@Override
 	public boolean isOnline() {
-		return player != null && player.isOnline();
+		return bukkitPlayer != null && bukkitPlayer.isOnline();
 	}
 	
 	
@@ -278,58 +245,6 @@ public class CorePlayer implements SabrePlayer {
 	
 	
 	/**
-	 * Gets the current chat channel
-	 * @return The current chat channel
-	 */
-	@Override
-	public ChatChannel getChatChannel() {
-		return this.chatChannel;
-	}
-	
-	
-	/**
-	 * Sets the chat channel
-	 * @param chatChannel The new chat channel
-	 */
-	@Override
-	public void setChatChannel(ChatChannel chatChannel) {
-		Guard.ArgumentNotNull(chatChannel, "chatChannel");
-		Guard.ArgumentNotEquals(chatChannel, "chatChannel", this, "self");
-		
-		this.chatChannel = chatChannel;
-	}
-	
-	
-	/**
-	 * Sets the chat channel to global chat
-	 */
-	@Override
-	public void moveToGlobalChat() {
-		this.chatChannel = sabreApi.getGlobalChat();
-	}
-	
-	
-	/**
-	 * Sets the last messaged player
-	 * @return The last messaged player
-	 */
-	@Override
-	public SabrePlayer getLastMessaged() {
-		return this.lastMessaged;
-	}
-	
-	
-	/**
-	 * Sets the last messaged player
-	 * @param lastMessaged The last messaged player
-	 */
-	@Override
-	public void setLastMessaged(SabrePlayer lastMessaged) {		
-		this.lastMessaged = lastMessaged;
-	}
-	
-	
-	/**
 	 * Gets the ban status
 	 * @param banned Whether the player is banned
 	 */
@@ -384,64 +299,6 @@ public class CorePlayer implements SabrePlayer {
 			this.getBukkitPlayer().sendMessage(msg);
 		}
 	}
-
-
-	/**
-	 * Chats with a specific player as a private message
-	 * @param sender The player sending the message
-	 * @param msg The message
-	 */
-	@Override
-	public void chat(SabrePlayer sender, String msg) {
-		Guard.ArgumentNotNull(sender, "sender");
-		Guard.ArgumentNotNull(msg, "msg");
-		
-		if (this.isOnline()) {
-			if (this.ignoredPlayers.contains(sender)) {
-				sender.msg(Lang.chatYouAreIgnored, this.name);
-				
-				// Move to global chat
-				if (sender.getChatChannel().equals(this)) {
-					sender.setChatChannel(sabreApi.getGlobalChat());
-					sender.msg(Lang.chatMovedGlobal);
-				}
-				return;
-			}
-			
-			sender.msg("<lp>To %s: %s", this.getName(), msg);
-			this.msg("<lp>From %s: %s", sender.getName(), msg);
-			this.setLastMessaged(sender);
-			sender.setLastMessaged(this);
-			sabreApi.log(Level.INFO, "%s -> %s: %s", sender.getName(), this.getName(), msg);
-		} else {
-			sender.msg(Lang.chatPlayerNowOffline, this.getName());
-			
-			// Move to global chat
-			if (sender.getChatChannel().equals(this)) {
-				sender.setChatChannel(sabreApi.getGlobalChat());
-				sender.msg(Lang.chatMovedGlobal);
-			}
-		}
-	}
-	
-	
-	
-	@Override
-	public void chatMe(SabrePlayer sender, String msg) {		
-		Guard.ArgumentNotNull(sender, "sender");
-		Guard.ArgumentNotNull(msg, "msg");
-		
-		if (this.isOnline()) {
-			sender.msg("<lp><it>%s %s", this.getName(), msg);
-			this.msg("<lp><it>%s %s", sender.getName(), msg);
-			this.setLastMessaged(sender);
-			sender.setLastMessaged(this);
-			sabreApi.log(Level.INFO, "%s -> %s: %s", sender.getName(), this.getName(), msg);
-		} else {
-			sender.msg(Lang.chatPlayerNowOffline, this.getName());
-			sender.msg(Lang.chatMovedGlobal, this.getName());
-		}
-	}
 	
 	
 	/**
@@ -457,22 +314,12 @@ public class CorePlayer implements SabrePlayer {
 			return -1;
 		}
 		
-		Location myLocation = player.getLocation();
+		Location myLocation = bukkitPlayer.getLocation();
 		Location otherLocation = other.getBukkitPlayer().getLocation();
 		int dx = otherLocation.getBlockX() - myLocation.getBlockX();
 		int dz = otherLocation.getBlockZ() - myLocation.getBlockZ();
 		
 		return (int)Math.sqrt(Math.pow(dx, 2) + Math.pow(dz, 2));
-	}
-	
-	
-	/**
-	 * Gets the offline messages for the player
-	 * @return The offline messages
-	 */
-	@Override
-	public Collection<String> getOfflineMessages() {
-		return this.offlineMessages;
 	}
 	
 	
@@ -560,7 +407,7 @@ public class CorePlayer implements SabrePlayer {
 	 */
 	@Override
 	public boolean isAdmin() {
-		return isOnline() && player.hasPermission(Permission.ADMIN_NODE);
+		return isOnline() && bukkitPlayer.hasPermission(Permission.ADMIN_NODE);
 	}
 	
 	/**
@@ -573,19 +420,30 @@ public class CorePlayer implements SabrePlayer {
 		Guard.ArgumentNotNull(location, "location");
 		
 		if (isOnline()) {
-			return player.teleport(location);
+			return bukkitPlayer.teleport(location);
 		}
 		return false;
 	}
-
-
+	
+	@Override
+	public String getConfigurationKey() {
+		return "players";
+	}
+	
+	@Override
+	public void loadConfiguration(ConfigurationObject config) {
+		
+	}
+	
+	@Override
+	public void saveConfiguration(ConfigurationObject config) {
+		
+	}
 
 	@Override
 	public <T> T getDataValue(String key) {
 		return dataStore.getDataValue(key);
 	}
-
-
 
 	@Override
 	public <T> void setDataValue(String key, T value) {

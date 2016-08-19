@@ -2,16 +2,17 @@ package com.civfactions.SabreCore.chat;
 
 import java.util.logging.Level;
 
-import com.civfactions.SabreApi.IChatChannel;
-import com.civfactions.SabreApi.IPlayer;
+import com.civfactions.SabreApi.SabrePlayer;
+import com.civfactions.SabreApi.chat.ChatChannel;
+import com.civfactions.SabreApi.chat.ChatPlayer;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.data.ConfigurationObject;
-import com.civfactions.SabreApi.data.IConfigurable;
+import com.civfactions.SabreApi.data.Configurable;
 import com.civfactions.SabreApi.data.StringConfiguration;
 import com.civfactions.SabreApi.data.StringValue;
 import com.civfactions.SabreApi.util.Guard;
 
-public class GlobalChat implements IChatChannel, IConfigurable {
+public class GlobalChat implements ChatChannel, Configurable {
 
 	private final String CONFIG_KEY = "chat";
 	private final StringValue strNoOneHears = new StringValue("NO_ONE_HEARS_YOU", "<silver>No one hears you.");
@@ -36,13 +37,13 @@ public class GlobalChat implements IChatChannel, IConfigurable {
 	
 	
 	@Override
-	public void chat(IPlayer sender, String msg) {
+	public void chat(ChatPlayer sender, String msg) {
 		String senderName = sender.getName();
 		boolean found = false;
 		String formatted = sabreApi.formatText("<w>%s: %s", senderName, msg);
 		sabreApi.log(Level.INFO, formatted);
 		
-		for (IPlayer p : sabreApi.<IPlayer>getOnlinePlayers()) {
+		for (SabrePlayer p : sabreApi.getOnlinePlayers()) {
 			int distance = p.getDistanceFrom(sender);
 			if (distance >=0 && distance <= chatRadius && p.getBukkitPlayer().getWorld().equals(sender.getBukkitPlayer().getWorld())) {
 				p.msg(formatted);
@@ -61,12 +62,12 @@ public class GlobalChat implements IChatChannel, IConfigurable {
 	
 	
 	@Override
-	public void chatMe(IPlayer sender, String msg) {
+	public void chatMe(ChatPlayer sender, String msg) {
 		String senderName = sender.getName();
 		boolean found = false;
 		String formatted = sabreApi.formatText("<silver><it>%s %s", senderName, msg);
 		
-		for (IPlayer p : sabreApi.<IPlayer>getOnlinePlayers()) {
+		for (SabrePlayer p : sabreApi.getOnlinePlayers()) {
 			int distance = p.getDistanceFrom(sender);
 			if (distance >=0 && distance <= chatRadius && p.getBukkitPlayer().getWorld().equals(sender.getBukkitPlayer().getWorld())) {
 				p.msg(formatted);
