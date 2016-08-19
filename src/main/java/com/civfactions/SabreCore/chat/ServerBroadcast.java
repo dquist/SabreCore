@@ -10,7 +10,7 @@ import com.civfactions.SabreApi.data.StringConfiguration;
 import com.civfactions.SabreApi.data.StringValue;
 import com.civfactions.SabreApi.util.Guard;
 
-public class ServerBroadcast implements ChatChannel, Configurable {
+class ServerBroadcast implements ChatChannel, Configurable {
 	
 	private final String CONFIG_KEY = "chat";
 	private final StringValue strBcastChat = new StringValue("SERVER_BROADCAST_CHAT", "<gold>## %s: <w>%s");
@@ -20,7 +20,7 @@ public class ServerBroadcast implements ChatChannel, Configurable {
 	
 	private StringConfiguration strings = new StringConfiguration();
 	
-	public ServerBroadcast(SabreApi sabreApi) {
+	ServerBroadcast(SabreApi sabreApi) {
 		Guard.ArgumentNotNull(sabreApi, "sabreApi");
 		
 		this.sabreApi = sabreApi;

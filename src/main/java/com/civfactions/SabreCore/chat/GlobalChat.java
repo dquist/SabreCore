@@ -12,7 +12,7 @@ import com.civfactions.SabreApi.data.StringConfiguration;
 import com.civfactions.SabreApi.data.StringValue;
 import com.civfactions.SabreApi.util.Guard;
 
-public class GlobalChat implements ChatChannel, Configurable {
+class GlobalChat implements ChatChannel, Configurable {
 
 	private final String CONFIG_KEY = "chat";
 	private final StringValue strNoOneHears = new StringValue("NO_ONE_HEARS_YOU", "<silver>No one hears you.");
@@ -29,7 +29,7 @@ public class GlobalChat implements ChatChannel, Configurable {
 	 * @param sabreApi The Sabre API
 	 * @param config The config object
 	 */
-	public GlobalChat(SabreApi sabreApi) {
+	GlobalChat(SabreApi sabreApi) {
 		Guard.ArgumentNotNull(sabreApi, "sabreApi");
 		
 		this.sabreApi = sabreApi;

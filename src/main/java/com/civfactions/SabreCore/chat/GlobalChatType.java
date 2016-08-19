@@ -1,6 +1,6 @@
 package com.civfactions.SabreCore.chat;
 
-public enum GlobalChatType {
+enum GlobalChatType {
 	GLOBAL("global"),
 	WORLD("world"),
 	RADIUS("radius");

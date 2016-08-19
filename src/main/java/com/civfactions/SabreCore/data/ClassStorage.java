@@ -3,6 +3,7 @@ package com.civfactions.SabreCore.data;
 import java.util.HashMap;
 
 import com.civfactions.SabreApi.data.StoredValue;
+import com.civfactions.SabreApi.util.Guard;
 
 public final class ClassStorage {
 
@@ -13,19 +14,25 @@ public final class ClassStorage {
 	}
 	
 	private ClassStorage(HashMap<String, StoredValue<?>> values) {
-		this.values = new HashMap<String, StoredValue<?>>(values);
+		Guard.ArgumentNotNull(values, "values");
+		
+		this.values = new HashMap<String, StoredValue<?>>();
+		
+		for (StoredValue<?> v : values.values()) {
+			values.put(v.getName(), v.cloneDefault());
+		}
 	}
 	
-	public void register(StoredValue<?> value) {
-		values.put(value.getName(), value);
+	public <T> void register(String name, T value, boolean persist) {
+		values.put(name, new CoreStoredValue<T>(name, value, persist));
+	}
+	
+	public <T> void register(String name, T value) {
+		register(name, value, false);
 	}
 	
 	public void unregisterValue(String name) {
 		values.remove(name);
-	}
-	
-	public void unregisterValue(StoredValue<?> value) {
-		unregisterValue(value.getName());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -39,10 +46,7 @@ public final class ClassStorage {
 		((StoredValue<T>)values.get(key)).setValue(value);
 	}
 	
-	@Override
-	public ClassStorage clone() {
+	public ClassStorage cloneDefault() {
 		return new ClassStorage(values);
 	}
-	
-	
 }

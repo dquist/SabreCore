@@ -10,7 +10,7 @@ import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.PlayerWrapper;
 
-public class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
+class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 
 	private final static String lastMessagedParamName = "lastMessaged";
 	private final static String chatChannelParamName = "chatChannel";
@@ -19,7 +19,7 @@ public class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	private final ChatModule chatModule;
 	private final SabrePlayer player;
 	
-	public ChatPlayerWrapper(SabrePlayer player, ChatModule chatModule) {
+	ChatPlayerWrapper(SabrePlayer player, ChatModule chatModule) {
 		super(player);
 
 		Guard.ArgumentNotNull(chatModule, "chatModule");
