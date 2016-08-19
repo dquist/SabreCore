@@ -1,23 +1,31 @@
 package com.civfactions.SabreCore.chat;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.chat.ChatChannel;
 import com.civfactions.SabreApi.chat.ChatPlayer;
+import com.civfactions.SabreApi.data.StorageParameter;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.PlayerWrapper;
 
 class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 
-	private final static String lastMessagedParamName = "lastMessaged";
-	private final static String chatChannelParamName = "chatChannel";
-	private final static String ignoredPlayersParamName = "ignoredPlayers";
+	public final static String lastMessagedParamName = "lastMessaged";
+	public final static String chatChannelParamName = "chatChannel";
+	public final static String ignoredPlayersParamName = "ignoredPlayers";
 	
 	private final ChatModule chatModule;
 	private final SabrePlayer player;
+	
+	private final StorageParameter<ChatPlayer> lastMessaged;
+	private final StorageParameter<ChatChannel> chatChannel;
+	private final StorageParameter<HashSet<ChatPlayer>> ignoredPlayers;
+	private final StorageParameter<ArrayList<String>> offlineMessages;
 	
 	ChatPlayerWrapper(SabrePlayer player, ChatModule chatModule) {
 		super(player);
@@ -27,6 +35,11 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 
 		this.chatModule = chatModule;
 		this.player = player;
+		
+		lastMessaged = new StorageParameter<ChatPlayer>(this, "lastMessaged", null);
+		chatChannel = new StorageParameter<ChatChannel>(this, "chatChannel", chatModule.getGlobalChat());
+		ignoredPlayers = new StorageParameter<HashSet<ChatPlayer>>(this, "ignoredPlayers", new HashSet<ChatPlayer>());
+		offlineMessages = new StorageParameter<ArrayList<String>>(this, "offlineMessages", new ArrayList<String>());
 	}
 	
 	/**
@@ -34,7 +47,7 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	 * @return The last messaged player
 	 */
 	public ChatPlayer getLastMessaged() {
-		return player.getDataValue(lastMessagedParamName);
+		return lastMessaged.getValue();
 	}
 	
 	
@@ -44,7 +57,7 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	 */
 	@Override
 	public void setLastMessaged(ChatPlayer lastMessaged) {
-		player.setDataValue(lastMessagedParamName, lastMessaged);
+		this.lastMessaged.setValue(lastMessaged);
 	}
 	
 	/**
@@ -53,7 +66,7 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	 * @return The current chat channel
 	 */
 	public ChatChannel getChatChannel() {
-		return player.getDataValue(chatChannelParamName);
+		return this.chatChannel.getValue();
 	}
 	
 	
@@ -66,7 +79,7 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 		Guard.ArgumentNotNull(chatChannel, "chatChannel");
 		Guard.ArgumentNotEquals(chatChannel, "chatChannel", this, "self");
 		
-		player.setDataValue(chatChannelParamName, chatChannel);
+		this.chatChannel.setValue(chatChannel);
 	}
 
 
@@ -76,7 +89,7 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	 */
 	@Override
 	public Collection<String> getOfflineMessages() {
-		return null; // TODO
+		return offlineMessages.getValue();
 	}
 	
 	
@@ -93,13 +106,11 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	public void setIgnored(ChatPlayer player, boolean ignored) {
 		Guard.ArgumentNotNull(player, "player");
 		
-		/*
-		if (ignored && !ignoredPlayers.contains(sp)) {
-			ignoredPlayers.add(sp);
+		if (ignored && !isIgnoring(player)) {
+			ignoredPlayers.getValue().add(player);
 		} else {
-			ignoredPlayers.remove(sp);
-		} */
-		// TODO
+			ignoredPlayers.getValue().remove(player);
+		}
 	}
 	
 	
@@ -110,7 +121,8 @@ class ChatPlayerWrapper extends PlayerWrapper implements ChatPlayer {
 	@Override
 	public boolean isIgnoring(ChatPlayer player) {
 		Guard.ArgumentNotNull(player, "player");
-		return false; // TODO
+		
+		return ignoredPlayers.getValue().contains(player);
 	}
 
 

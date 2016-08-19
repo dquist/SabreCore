@@ -1,15 +1,25 @@
 package com.civfactions.SabreCore.chat;
 
+import java.util.UUID;
+
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.SabreModule;
+import com.civfactions.SabreApi.SabrePlayer;
+import com.civfactions.SabreApi.chat.ChatPlayer;
 import com.civfactions.SabreApi.util.Guard;
 
+/**
+ * The Sabre Chat Module
+ * @author Gordon
+ *
+ */
 public class ChatModule extends SabreModule {
 
 	private final SabreApi sabreApi;
 	private final GlobalChat globalChat;
 	private final ServerBroadcast broadcastChat;
 	private final ChatListener chatListener;
+	
 	
 	/**
 	 * Creates a new ChatModule instance
@@ -21,16 +31,12 @@ public class ChatModule extends SabreModule {
 		this.sabreApi = sabreApi;
 		this.globalChat = new GlobalChat(sabreApi);
 		this.broadcastChat = new ServerBroadcast(sabreApi);
-		this.chatListener = new ChatListener(sabreApi);
+		this.chatListener = new ChatListener(sabreApi, this);
 	}
 
 	
 	@Override
 	public void onEnable() {
-		
-		
-		
-		
 		sabreApi.registerEvents(chatListener);
 	}
 	
@@ -50,5 +56,33 @@ public class ChatModule extends SabreModule {
 	 */
 	public ServerBroadcast getServerBroadcast() {
 		return this.broadcastChat;
+	}
+	
+	
+	/**
+	 * Gets a player wrapped as a ChatPlayer
+	 * @param name The name of the player
+	 * @return The wrapper ChatPlayer if it exists, otherwise null
+	 */
+	public ChatPlayer getPlayer(String name) {
+		SabrePlayer p = sabreApi.getPlayer(name);
+		if (p == null) {
+			return null;
+		}
+		return new ChatPlayerWrapper(p, this);
+	}
+	
+	
+	/**
+	 * Gets a player wrapped as a ChatPlayer
+	 * @param name The name of the player
+	 * @return The wrapper ChatPlayer if it exists, otherwise null
+	 */
+	public ChatPlayer getPlayer(UUID uid) {
+		SabrePlayer p = sabreApi.getPlayer(uid);
+		if (p == null) {
+			return null;
+		}
+		return new ChatPlayerWrapper(p, this);
 	}
 }

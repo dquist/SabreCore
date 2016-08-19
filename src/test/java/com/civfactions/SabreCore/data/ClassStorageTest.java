@@ -12,11 +12,11 @@ import com.civfactions.SabreApi.SabrePlayer;
 
 public class ClassStorageTest {
 
-	private ClassStorage storage;
+	private StoredValueMap storage;
 	
 	@Before
 	public void setUp() throws Exception {
-		storage = new ClassStorage();
+		storage = new StoredValueMap();
 		assertNotNull(storage);
 	}
 
@@ -46,9 +46,5 @@ public class ClassStorageTest {
 		listVar.add("String2");
 		storage.register(varName4, listVar);
 		assertEquals(storage.getDataValue(varName4), listVar);
-		
-		ClassStorage storage2 = storage.cloneDefault();
-		assertNotNull(storage2);
-		assertNotSame(storage, storage2);
 	}
 }

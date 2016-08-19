@@ -10,15 +10,20 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.chat.ChatPlayer;
+import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.SabreUtil;
 
 class ChatListener implements Listener {
 
 	private final SabreApi sabreApi;
+	private final ChatModule chatModule;
 
-	ChatListener(SabreApi sabreApi) {
+	ChatListener(SabreApi sabreApi, ChatModule chatModule) {
+		Guard.ArgumentNotNull(sabreApi, "sabreApi");
+		Guard.ArgumentNotNull(chatModule, "chatModule");
 
 		this.sabreApi = sabreApi;
+		this.chatModule = chatModule;
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -26,7 +31,7 @@ class ChatListener implements Listener {
 		try {
 			e.setCancelled(true);
 
-			ChatPlayer player = sabreApi.getPlayer(e.getPlayer().getUniqueId());
+			ChatPlayer player = chatModule.getPlayer(e.getPlayer().getUniqueId());
 			player.getChatChannel().chat(player, e.getMessage());
 
 		} catch (Exception ex) {

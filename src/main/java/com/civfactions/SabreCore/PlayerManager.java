@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.util.Guard;
-import com.civfactions.SabreCore.data.ClassStorage;
 
 /**
  * Class for managing all the player records
@@ -23,7 +22,6 @@ public class PlayerManager {
 	
 	private final SabreApi sabreApi;
 	private final DataStorage db;
-	private final ClassStorage playerStorage;
 	
 	private final HashMap<UUID, CorePlayer> players;
 	private final HashMap<UUID, CorePlayer> onlinePlayers;
@@ -31,14 +29,12 @@ public class PlayerManager {
 	/**
 	 * Creates a new PlayerManager instance 
 	 */
-	public PlayerManager(SabreApi sabreApi, DataStorage dataStorage, ClassStorage playerStorage) {
+	public PlayerManager(SabreApi sabreApi, DataStorage dataStorage) {
 		Guard.ArgumentNotNull(sabreApi, "sabreApi");
 		Guard.ArgumentNotNull(dataStorage, "dataStorage");
-		Guard.ArgumentNotNull(playerStorage, "playerStorage");
 		
 		this.sabreApi = sabreApi;
 		this.db = dataStorage;
-		this.playerStorage = playerStorage;
 		
 		this.players = new HashMap<UUID, CorePlayer>();
 		this.onlinePlayers = new HashMap<UUID, CorePlayer>();
@@ -135,7 +131,7 @@ public class PlayerManager {
 		}
 		
 		// Now we should have a unique name for the new player
-		CorePlayer sPlayer = new CorePlayer(sabreApi, this, playerStorage, player.getUniqueId(), name);
+		CorePlayer sPlayer = new CorePlayer(sabreApi, player.getUniqueId(), name);
 		//sPlayer.setPlayer(player); TODO
 		sPlayer.setFirstLogin(new Date());
 		sPlayer.setName(name);

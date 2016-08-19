@@ -8,14 +8,12 @@ import java.util.logging.Level;
 
 import org.bukkit.event.Listener;
 
-import com.civfactions.SabreApi.PlayerWrapper;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.SabreModule;
+import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabrePlugin;
 import com.civfactions.SabreApi.data.DataAccess;
 import com.civfactions.SabreCore.chat.ChatModule;
-import com.civfactions.SabreCore.data.ClassStorage;
-import com.civfactions.SabreCore.data.CoreStoredValue;
 import com.civfactions.SabreCore.data.MongoStorage;
 import com.civfactions.SabreCore.util.TextUtil;
 
@@ -26,8 +24,7 @@ public class SabreCore implements SabreApi {
 	private final HashSet<SabreModule> modules = new HashSet<SabreModule>();
 	private final TextUtil textUtil = new TextUtil();
 	private final DataStorage storage = new MongoStorage();
-	private final ClassStorage playerStorage = new ClassStorage();
-	private final PlayerManager pm = new PlayerManager(this, storage, playerStorage);
+	private final PlayerManager pm = new PlayerManager(this, storage);
 	
 	private final ChatModule chatModule = new ChatModule(this);
 	
@@ -48,8 +45,6 @@ public class SabreCore implements SabreApi {
 				ex.printStackTrace();
 			}
 		}
-		
-		playerStorage.register("lastMessaged", null);
 	}
 
 	@Override
@@ -69,19 +64,18 @@ public class SabreCore implements SabreApi {
 	}
 
 	@Override
-	public <T extends PlayerWrapper> Collection<T> getOnlinePlayers() {
-		//return pm.getOnlinePlayers();
-		return null; // TODO
+	public Collection<SabrePlayer> getOnlinePlayers() {
+		return pm.getOnlinePlayers();
 	}
 
 	@Override
-	public <T extends PlayerWrapper> T getPlayer(String name) {
-		return null;  // TODO
+	public SabrePlayer getPlayer(String name) {
+		return pm.getPlayerByName(name);
 	}
 
 	@Override
-	public <T extends PlayerWrapper> T getPlayer(UUID uid) {
-		return null; // TODO
+	public SabrePlayer getPlayer(UUID uid) {
+		return pm.getPlayerById(uid);
 	}
 
 	@Override

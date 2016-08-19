@@ -1,10 +1,6 @@
 package com.civfactions.SabreCore;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +12,7 @@ import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.data.ConfigurationObject;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.Permission;
-import com.civfactions.SabreCore.data.ClassStorage;
+import com.civfactions.SabreCore.data.StoredValueMap;
 
 /**
  * Represents a player that has joined the server and may or may not be online
@@ -25,7 +21,6 @@ import com.civfactions.SabreCore.data.ClassStorage;
 public class CorePlayer implements SabrePlayer {
 	
 	private final SabreApi sabreApi;
-	private final PlayerManager pm;
 	
 	// Unique ID of the player
 	private final UUID uid;
@@ -43,20 +38,14 @@ public class CorePlayer implements SabrePlayer {
 	private boolean banned;
 	private String banMessage;
 	
-	// Pending offline messages for the player
-	private List<String> offlineMessages;
-	
 	// Whether the player is vanished or not
 	private boolean vanished;
 	
 	// The player's bed location
 	private Location bedLocation;
 	
-	// Other players that are being ignored by this player
-	private final Set<SabrePlayer> ignoredPlayers;
 	
-	
-	private final ClassStorage dataStore;
+	private final StoredValueMap dataStore = new StoredValueMap();
 	
 	
 	/**
@@ -64,13 +53,11 @@ public class CorePlayer implements SabrePlayer {
 	 * @param uid The player's ID
 	 * @param name The player's display name
 	 */
-	public CorePlayer(SabreApi sabreApi, PlayerManager playerManager, ClassStorage dataStore, UUID uid, String name) {
-		Guard.ArgumentNotNull(playerManager, "playerManager");
+	public CorePlayer(SabreApi sabreApi, UUID uid, String name) {
 		Guard.ArgumentNotNull(uid, "uid");
 		Guard.ArgumentNotNullOrEmpty(name, "name");
 		
 		this.sabreApi = sabreApi;
-		this.pm = playerManager;
 		this.uid = uid;
 		this.name = name;
 		this.firstLogin = sabreApi.getTimeNow();
@@ -78,11 +65,7 @@ public class CorePlayer implements SabrePlayer {
 		this.playTime = 0;
 		this.banned = false;
 		this.banMessage = "";
-		this.offlineMessages = new ArrayList<String>();
 		this.vanished = false;
-		this.ignoredPlayers = new HashSet<SabrePlayer>();
-		
-		this.dataStore = dataStore;
 	}
 	
 	/**
@@ -324,17 +307,6 @@ public class CorePlayer implements SabrePlayer {
 	
 	
 	/**
-	 * Adds an offline message for the player
-	 * @param message The message to add
-	 */
-	public void addOfflineMessage(String message) {
-		Guard.ArgumentNotNullOrEmpty(message, "message");
-		
-		this.offlineMessages.add(message);
-	}
-	
-	
-	/**
 	 * Gets the admin vanished status
 	 * @return true if the player is vanished
 	 */
@@ -370,35 +342,6 @@ public class CorePlayer implements SabrePlayer {
 	 */
 	public void setBedLocation(Location bedLocation) {
 		this.bedLocation = bedLocation;
-	}
-	
-	
-	/**
-	 * Sets the ignored state of a player
-	 * @param sp The player to set
-	 * @param ignored The ignored status
-	 */
-	@Override
-	public void setIgnored(SabrePlayer sp, boolean ignored) {
-		Guard.ArgumentNotNull(sp, "sp");
-		
-		if (ignored && !ignoredPlayers.contains(sp)) {
-			ignoredPlayers.add(sp);
-		} else {
-			ignoredPlayers.remove(sp);
-		}
-	}
-	
-	
-	/**
-	 * Gets whether a player is ignored
-	 * @return Whether the player is ignored
-	 */
-	@Override
-	public boolean isIgnoring(SabrePlayer sp) {
-		Guard.ArgumentNotNull(sp, "sp");
-		
-		return ignoredPlayers.contains(sp);
 	}
 	
 	
@@ -446,7 +389,11 @@ public class CorePlayer implements SabrePlayer {
 	}
 
 	@Override
-	public <T> void setDataValue(String key, T value) {
+	public <T> void setDataValue(String key, T value, boolean persist) {
 		dataStore.setDataValue(key, value);
+		
+		if (persist) {
+			// TODO
+		}
 	}
 }
