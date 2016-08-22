@@ -2,7 +2,6 @@ package com.civfactions.SabreCore.chat;
 
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.SabreCommand;
-import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.chat.ChatPlayer;
 
 public abstract class ChatCommand extends SabreCommand {

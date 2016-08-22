@@ -1,6 +1,7 @@
 package com.civfactions.SabreCore.chat;
 
 import com.civfactions.SabreApi.CommandVisibility;
+import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.chat.ChatPlayer;
 

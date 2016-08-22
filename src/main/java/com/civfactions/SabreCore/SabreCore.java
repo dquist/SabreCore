@@ -13,6 +13,7 @@ import com.civfactions.SabreApi.SabreModule;
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabrePlugin;
 import com.civfactions.SabreApi.data.DataAccess;
+import com.civfactions.SabreApi.util.TextFormatter;
 import com.civfactions.SabreCore.chat.ChatModule;
 import com.civfactions.SabreCore.data.MongoStorage;
 import com.civfactions.SabreCore.util.TextUtil;
@@ -106,5 +107,9 @@ public class SabreCore implements SabreApi {
 	@Override
 	public void log(String str, Object... args) {
 		log(Level.INFO, str, args);
+	}
+	
+	public TextFormatter getFormatter() {
+		return this.textUtil;
 	}
 }

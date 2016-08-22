@@ -9,9 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import com.civfactions.SabreApi.Named;
+import com.civfactions.SabreApi.util.TextFormatter;
 
-public class TextUtil
-{	
+public class TextUtil implements TextFormatter {	
 	public Map<String, String> tags;
 	
 	public TextUtil() {
@@ -142,18 +142,18 @@ public class TextUtil
 	// Standard utils like UCFirst, implode and repeat.
 	// -------------------------------------------- //
 	
-	public static String upperCaseFirst(String string)
+	public String upperCaseFirst(String string)
 	{
 		return string.substring(0, 1).toUpperCase()+string.substring(1);
 	}
 	
-	public static String repeat(String s, int times)
+	public String repeat(String s, int times)
 	{
 		if (times <= 0) return "";
 		else return s + repeat(s, times-1);
 	}
 	
-	public static String implode(List<String> list, String glue)
+	public String implode(List<String> list, String glue)
 	{
 		StringBuilder ret = new StringBuilder();
 		for (int i=0; i<list.size(); i++)
@@ -167,7 +167,7 @@ public class TextUtil
 		return ret.toString();
 	}
 	
-	public static String implodeCommaAnd(List<String> list, String comma, String and)
+	public String implodeCommaAnd(List<String> list, String comma, String and)
 	{
 		if (list.size() == 0) return "";
 		if (list.size() == 1) return list.get(0);
@@ -180,7 +180,7 @@ public class TextUtil
 		
 		return implode(list, comma);
 	}
-	public static String implodeCommaAnd(List<String> list)
+	public String implodeCommaAnd(List<String> list)
 	{
 		return implodeCommaAnd(list, ", ", " and ");
 	}
@@ -198,8 +198,8 @@ public class TextUtil
 	// Paging and chrome-tools like titleize
 	// -------------------------------------------- //
 	
-	private final static String titleizeLine = repeat("_", 52);
-	private final static int titleizeBalance = -1;
+	private final String titleizeLine = repeat("_", 52);
+	private final int titleizeBalance = -1;
 	public String titleize(String str)
 	{
 		return titleize("<a>", str);
@@ -281,7 +281,7 @@ public class TextUtil
 		unitMillis.put("seconds", millisPerSecond);
 	}
 	
-	public static String getTimeDeltaDescriptionRelNow(long millis)
+	public String getTimeDeltaDescriptionRelNow(long millis)
 	{
 		String ret = "";
 		
