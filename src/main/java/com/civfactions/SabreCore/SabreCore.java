@@ -44,6 +44,9 @@ public class SabreCore implements SabreApi {
 
 	@Override
 	public void onEnable() {
+		log("=== ENABLE START ===");
+		long timeEnableStart = System.currentTimeMillis();
+		
 		// Enable the registered modules
 		for(SabreModule m: modules) {
 			try {
@@ -53,6 +56,14 @@ public class SabreCore implements SabreApi {
 				ex.printStackTrace();
 			}
 		}
+		
+		// Startup complete!
+		log("=== ENABLE DONE (Took "+(System.currentTimeMillis() - timeEnableStart)+"ms) ===");
+	}
+	
+	@Override
+	public void onDisable() {
+		log("=== %s Disabled ===", plugin.getName());
 	}
 
 	@Override
@@ -102,23 +113,13 @@ public class SabreCore implements SabreApi {
 	}
 
 	@Override
-	public void log(Level level, String str, Object... args) {
-		plugin.getLogger().log(level, formatText(str, args));
+	public void log(Level level, String msg, Object... args) {
+		plugin.getLogger().log(level, formatText(msg, args));
 	}
 
 	@Override
-	public void log(Level level, Object msg) {
-		log(level, msg);
-	}
-
-	@Override
-	public void log(Object msg) {
-		log(Level.INFO, msg);
-	}
-
-	@Override
-	public void log(String str, Object... args) {
-		log(Level.INFO, str, args);
+	public void log(String msg, Object... args) {
+		log(Level.INFO, msg, args);
 	}
 
 	@Override
