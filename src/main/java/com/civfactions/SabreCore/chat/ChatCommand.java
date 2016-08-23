@@ -4,7 +4,7 @@ import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.SabreCommand;
 import com.civfactions.SabreApi.chat.ChatPlayer;
 
-public abstract class ChatCommand extends SabreCommand {
+abstract class ChatCommand extends SabreCommand {
 
 	protected final ChatModule chat;
 	

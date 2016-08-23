@@ -5,15 +5,19 @@ import com.civfactions.SabreApi.Lang;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.chat.ChatPlayer;
 
-public class CmdChatMsg extends ChatCommand {
+/**
+ * @author Gordon
+ * Provides ability for players to direct-message other players
+ *
+ */
+class CmdChatMsg extends ChatCommand {
 	
-	
-	public CmdChatMsg(SabreApi sabreApi, ChatModule chat) {
+	CmdChatMsg(SabreApi sabreApi, ChatModule chat) {
 		super(sabreApi, chat);
 		this.aliases.add("msg");
 
 		this.optionalArgs.put("player", "");
-		this.optionalArgs.put("what", "");
+		this.optionalArgs.put("message", "");
 		
 		this.helpShort = "messages a player";
 
@@ -24,7 +28,7 @@ public class CmdChatMsg extends ChatCommand {
 
 	
 	@Override
-	public void perform() {
+	protected void perform() {
 		if (args.size() == 0) {
 			msg(Lang.chatMovedGlobal);
 			me().moveToGlobalChat();

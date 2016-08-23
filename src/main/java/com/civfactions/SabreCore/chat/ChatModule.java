@@ -38,6 +38,9 @@ public class ChatModule extends SabreModule {
 	@Override
 	public void onEnable() {
 		sabreApi.registerEvents(chatListener);
+		
+		// Register commands
+		sabreApi.registerCommand(new CmdChatMsg(sabreApi, this));
 	}
 	
 	
