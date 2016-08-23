@@ -1,0 +1,5 @@
+name: SabreTemplate
+main: com.civfactions.SabreTemplate.SabreTemplatePlugin
+version: 0.0.1-SNAPSHOT
+description: Sabre plugin
+author: Gordon
