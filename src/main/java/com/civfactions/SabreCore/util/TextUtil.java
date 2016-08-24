@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import com.civfactions.SabreApi.Named;
+import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.TextFormatter;
 
 public class TextUtil implements TextFormatter {	
@@ -20,8 +21,7 @@ public class TextUtil implements TextFormatter {
 		createTags();
 	}
 	
-	private void createTags()
-	{
+	private void createTags() {
 		tags.put("l", TextUtil.parseColor("<green>"));		// logo
 		tags.put("a", TextUtil.parseColor("<gold>"));		// art
 		tags.put("n", TextUtil.parseColor("<silver>"));		// notice
@@ -39,13 +39,13 @@ public class TextUtil implements TextFormatter {
 	// Top-level parsing functions.
 	// -------------------------------------------- //
 	
-	public String parse(String str, Object... args)
-	{
+	public String parse(String str, Object... args) {
+		Guard.ArgumentNotNull(str, "str");
 		return String.format(this.parse(str), args);
 	}
 	
-	public String parse(String str)
-	{
+	public String parse(String str) {
+		Guard.ArgumentNotNull(str, "str");
 		return this.parseTags(parseColor(str));
 	}
 	
@@ -53,14 +53,13 @@ public class TextUtil implements TextFormatter {
 	// Tag parsing
 	// -------------------------------------------- //
 	
-	public String parseTags(String str)
-	{
+	public String parseTags(String str) {
+		Guard.ArgumentNotNull(str, "str");
 		return replaceTags(str, this.tags);
 	}
 	
 	public static final transient Pattern patternTag = Pattern.compile("<([a-zA-Z0-9_]*)>");
-	public static String replaceTags(String str, Map<String, String> tags)
-	{
+	public static String replaceTags(String str, Map<String, String> tags) {
 		StringBuffer ret = new StringBuffer();
 		Matcher matcher = patternTag.matcher(str);
 		while (matcher.find())
@@ -84,24 +83,24 @@ public class TextUtil implements TextFormatter {
 	// Color parsing
 	// -------------------------------------------- //
 	
-	public static String parseColor(String string)
-	{
+	public static String parseColor(String string) {
+		Guard.ArgumentNotNull(string, "string");
 		string = parseColorAmp(string);
 		string = parseColorAcc(string);
 		string = parseColorTags(string);
 		return string;
 	}
 	
-	public static String parseColorAmp(String string)
-	{
+	public static String parseColorAmp(String string) {
+		Guard.ArgumentNotNull(string, "string");
 		string = string.replaceAll("(§([a-z0-9]))", "\u00A7$2");
 		string = string.replaceAll("(&([a-z0-9]))", "\u00A7$2");
 		string = string.replace("&&", "&");
 		return string;
 	}
 	
-	public static String parseColorAcc(String string)
-	{
+	public static String parseColorAcc(String string) {
+		Guard.ArgumentNotNull(string, "string");
 		return string.replace("`e", "")
 		.replace("`r", ChatColor.RED.toString()) .replace("`R", ChatColor.DARK_RED.toString())
 		.replace("`y", ChatColor.YELLOW.toString()) .replace("`Y", ChatColor.GOLD.toString())
@@ -113,8 +112,8 @@ public class TextUtil implements TextFormatter {
 		.replace("`S", ChatColor.DARK_GRAY.toString()) .replace("`w", ChatColor.WHITE.toString());
 	}
 	
-	public static String parseColorTags(String string)
-	{
+	public static String parseColorTags(String string) {
+		Guard.ArgumentNotNull(string, "string");
 		return string.replace("<empty>", "")
 		.replace("<black>", "\u00A70")
 		.replace("<navy>", "\u00A71")
@@ -142,19 +141,20 @@ public class TextUtil implements TextFormatter {
 	// Standard utils like UCFirst, implode and repeat.
 	// -------------------------------------------- //
 	
-	public String upperCaseFirst(String string)
-	{
+	public String upperCaseFirst(String string) {
+		Guard.ArgumentNotNull(string, "string");
 		return string.substring(0, 1).toUpperCase()+string.substring(1);
 	}
 	
-	public String repeat(String s, int times)
-	{
+	public String repeat(String string, int times) {
+		Guard.ArgumentNotNull(string, "string");
 		if (times <= 0) return "";
-		else return s + repeat(s, times-1);
+		else return string + repeat(string, times-1);
 	}
 	
-	public String implode(List<String> list, String glue)
-	{
+	public String implode(List<String> list, String glue) {
+		Guard.ArgumentNotNull(list, "list");
+		Guard.ArgumentNotNull(glue, "glue");
 		StringBuilder ret = new StringBuilder();
 		for (int i=0; i<list.size(); i++)
 		{
