@@ -17,7 +17,7 @@ import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.data.SabreObjectFactory;
 import com.civfactions.SabreApi.util.Guard;
 
-public class MongoStorage implements DataStorage, Documentable {
+public class MongoStorage implements DataStorage {
 	
 	private final SabreLogger logger;
 	
@@ -80,6 +80,10 @@ public class MongoStorage implements DataStorage, Documentable {
 
 	@Override
 	public <T extends Documentable> DataCollection<T> getDataCollection(String name, SabreObjectFactory<T> factory) {
+		if (!connected) {
+			throw new RuntimeException("The MongoDB database isn't connected.");
+		}
+		
 		return new MongoDataCollection<T>(db.getCollection(name), factory, logger);
 	}
 

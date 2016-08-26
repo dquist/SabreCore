@@ -2,10 +2,12 @@ package com.civfactions.SabreCore;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabrePlugin;
 import com.civfactions.SabreApi.data.DataAccess;
+import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.util.TextFormatter;
 import com.civfactions.SabreCore.data.MongoStorage;
 import com.civfactions.SabreCore.util.TextUtil;
@@ -26,12 +28,29 @@ public class SabreCorePlugin extends SabrePlugin {
 	@Override
 	public void onEnable() {
 		super.onEnable();
+		
+		// TODO load config
+		SabreDocument config = new SabreDocument();
+		
+		storage.fromDocument(config);
+		
+		//connectDatabase();
+		
 		super.postEnable();
 	}
 	
 	@Override
 	public void onDisable() {
 		super.onDisable();
+	}
+	
+	
+	private void connectDatabase() {
+		try {
+			storage.connect();
+		} catch (Exception ex) {
+			log(Level.SEVERE, "* * * Failed to connect to database! * * * ");
+		}
 	}
 
 	@Override

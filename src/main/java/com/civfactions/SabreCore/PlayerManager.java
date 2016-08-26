@@ -24,7 +24,9 @@ import com.civfactions.SabreApi.util.Guard;
 public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	
 	private final SabreApi sabre;
-	private final DataCollection<CorePlayer> data;
+	private final DataStorage db;
+	
+	private DataCollection<CorePlayer> data;
 	
 	private final HashMap<UUID, CorePlayer> players;
 	private final HashMap<UUID, CorePlayer> onlinePlayers;
@@ -32,12 +34,12 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	/**
 	 * Creates a new PlayerManager instance 
 	 */
-	public PlayerManager(final SabreApi sabreApi, final DataStorage dataStorage) {
-		Guard.ArgumentNotNull(sabreApi, "sabreApi");
-		Guard.ArgumentNotNull(dataStorage, "dataStorage");
+	public PlayerManager(final SabreApi sabre, final DataStorage db) {
+		Guard.ArgumentNotNull(sabre, "sabre");
+		Guard.ArgumentNotNull(db, "db");
 		
-		this.sabre = sabreApi;
-		this.data = dataStorage.getDataCollection("players", this);
+		this.sabre = sabre;
+		this.db = db;
 		
 		this.players = new HashMap<UUID, CorePlayer>();
 		this.onlinePlayers = new HashMap<UUID, CorePlayer>();
@@ -47,6 +49,7 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	 * Loads all the player data from the database
 	 */
 	public void load() {
+		this.data = db.getDataCollection("players", this);
 		this.players.clear();
 
 		for (CorePlayer p : data.readAll()) {

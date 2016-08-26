@@ -5,7 +5,7 @@ import com.civfactions.SabreApi.data.DataCollection;
 import com.civfactions.SabreApi.data.Documentable;
 import com.civfactions.SabreApi.data.SabreObjectFactory;
 
-public interface DataStorage extends DataAccess {
+public interface DataStorage extends DataAccess, Documentable {
 	
 	boolean connect();
 	void disconnect();
