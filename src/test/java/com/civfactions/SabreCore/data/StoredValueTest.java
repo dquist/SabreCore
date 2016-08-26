@@ -1,7 +1,6 @@
 package com.civfactions.SabreCore.data;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.junit.Test;

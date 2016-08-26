@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 
 import com.civfactions.SabreApi.SabrePlayer;
+import com.civfactions.SabreApi.data.DataCollection;
+import com.civfactions.SabreApi.data.SabreDocument;
+import com.civfactions.SabreApi.data.SabreObjectFactory;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.util.Guard;
 
@@ -18,10 +21,10 @@ import com.civfactions.SabreApi.util.Guard;
  * Class for managing all the player records
  * @author Gordon
  */
-public class PlayerManager {
+public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	
-	private final SabreApi sabreApi;
-	private final DataStorage db;
+	private final SabreApi sabre;
+	private final DataCollection<CorePlayer> data;
 	
 	private final HashMap<UUID, CorePlayer> players;
 	private final HashMap<UUID, CorePlayer> onlinePlayers;
@@ -29,12 +32,12 @@ public class PlayerManager {
 	/**
 	 * Creates a new PlayerManager instance 
 	 */
-	public PlayerManager(SabreApi sabreApi, DataStorage dataStorage) {
+	public PlayerManager(final SabreApi sabreApi, final DataStorage dataStorage) {
 		Guard.ArgumentNotNull(sabreApi, "sabreApi");
 		Guard.ArgumentNotNull(dataStorage, "dataStorage");
 		
-		this.sabreApi = sabreApi;
-		this.db = dataStorage;
+		this.sabre = sabreApi;
+		this.data = dataStorage.getDataCollection("players", this);
 		
 		this.players = new HashMap<UUID, CorePlayer>();
 		this.onlinePlayers = new HashMap<UUID, CorePlayer>();
@@ -45,8 +48,8 @@ public class PlayerManager {
 	 */
 	public void load() {
 		this.players.clear();
-		
-		for (CorePlayer p : db.playersReadAll()) {
+
+		for (CorePlayer p : data.readAll()) {
 			this.players.put(p.getUniqueId(), p);
 		}
 	}
@@ -61,9 +64,9 @@ public class PlayerManager {
 		assertValidPlayer(player);
 		
 		onlinePlayers.remove(player.getUniqueId());
-		players.remove(player.getUniqueId());
-		//db.playerDelete(player);  TODO
-		sabreApi.log("Removed player: Name=%s, ID=%s", player.getName(), player.getUniqueId().toString());
+		CorePlayer removed = players.remove(player.getUniqueId());
+		data.remove(removed);
+		sabre.log("Removed player: Name=%s, ID=%s", player.getName(), player.getUniqueId().toString());
 	}
 	
 	
@@ -72,7 +75,7 @@ public class PlayerManager {
 	 * @param id The ID of the player
 	 * @return The player instance if it exists
 	 */
-	public SabrePlayer getPlayerById(UUID uid) {
+	public SabrePlayer getPlayerById(final UUID uid) {
 		Guard.ArgumentNotNull(uid, "uid");
 		
 		// Check online players first
@@ -89,7 +92,7 @@ public class PlayerManager {
 	 * @param id The name of the player
 	 * @return The player instance if it exists
 	 */
-	public SabrePlayer getPlayerByName(String name) {
+	public SabrePlayer getPlayerByName(final String name) {
 		Guard.ArgumentNotNullOrEmpty(name, "name");
 		
 		// Check online players first
@@ -115,7 +118,7 @@ public class PlayerManager {
 	 * @param player The bukkit player
 	 * @return The new SabrePlayer instance
 	 */
-	public SabrePlayer createNewPlayer(Player player) {
+	public SabrePlayer createNewPlayer(final Player player) {
 		Guard.ArgumentNotNull(player, "player");
 		
 		String originalName = player.getName();
@@ -131,13 +134,14 @@ public class PlayerManager {
 		}
 		
 		// Now we should have a unique name for the new player
-		CorePlayer sPlayer = new CorePlayer(sabreApi, player.getUniqueId(), name);
-		//sPlayer.setPlayer(player); TODO
+		CorePlayer sPlayer = new CorePlayer(sabre, data, player.getUniqueId(), name);
+		players.put(sPlayer.getUniqueId(), sPlayer);
+		data.insert(sPlayer);
+		
+		sPlayer.setBukkitPlayer(player);
 		sPlayer.setFirstLogin(new Date());
 		sPlayer.setName(name);
-		players.put(sPlayer.getUniqueId(), sPlayer);
-		//db.playerInsert(sPlayer); TODO
-		sabreApi.log("Created new player %s with ID %s", name, sPlayer.getUniqueId());
+		sabre.log("Created new player %s with ID %s", name, sPlayer.getUniqueId());
 		return sPlayer;
 	}
 	
@@ -146,7 +150,7 @@ public class PlayerManager {
 	 * @param p The player to validate
 	 * @return The matching SabrePlayer instance
 	 */
-	private CorePlayer assertValidPlayer(SabrePlayer p) {
+	private CorePlayer assertValidPlayer(final SabrePlayer p) {
 		UUID uid = p.getUniqueId();
 		
 		// Check online players first
@@ -164,15 +168,34 @@ public class PlayerManager {
 		return player;
 	}
 
+	/**
+	 * Gets the collection of all players who have ever logged in
+	 * @return The player list
+	 */
 	public Collection<SabrePlayer> getAllPlayers() {
 		Set<SabrePlayer> players = this.players.values().stream().map(p -> (SabrePlayer)p).collect(Collectors.toSet());
 		return Collections.unmodifiableSet(players);
 	}
 
 
+	/**
+	 * Gets the collection of players who are online
+	 * @return The player list
+	 */
 	public Collection<SabrePlayer> getOnlinePlayers() {
 		Set<SabrePlayer> onlinePlayers = this.onlinePlayers.values().stream().map(p -> (SabrePlayer)p).collect(Collectors.toSet());
 		return Collections.unmodifiableSet(onlinePlayers);
 	}
 
+	/**
+	 * Factory method for creating a new player instance
+	 * @param values The data values
+	 */
+	@Override
+	public CorePlayer createInstance(final SabreDocument doc) {
+		UUID uid = UUID.fromString(doc.get("_id").toString());
+		String name = doc.get("name").toString();
+		
+		return new CorePlayer(sabre, data, uid, name).fromDocument(doc);
+	}
 }

@@ -17,7 +17,7 @@ import com.civfactions.SabreCore.util.TextUtil;
 public class SabreCorePlugin extends SabrePlugin {
 	
 	private final TextUtil textUtil = new TextUtil();
-	private final DataStorage storage = new MongoStorage();
+	private final DataStorage storage = new MongoStorage(this);
 	private final PlayerManager pm = new PlayerManager(this, storage);
 	
 	public SabreCorePlugin() {
