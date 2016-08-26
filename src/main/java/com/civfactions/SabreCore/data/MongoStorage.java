@@ -9,6 +9,7 @@ import com.mongodb.client.MongoDatabase;
 
 import java.util.Arrays;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.civfactions.SabreApi.SabreLogger;
 import com.civfactions.SabreApi.data.DataCollection;
@@ -35,11 +36,16 @@ public class MongoStorage implements DataStorage {
 		Guard.ArgumentNotNull(logger, "logger");
 		
 		this.logger = logger;
+		
+		// Only log severe messages
+		Logger.getLogger( "org.mongodb.driver" ).setLevel(Level.SEVERE);
 	}
 
 	@Override
 	public boolean connect() {
 		try {
+			logger.log("Connecting to database...");
+			
 			if (DbUser.isEmpty()) {
 				mongoClient = new MongoClient(new ServerAddress(DbAddress, DbPort));
 			} else {
@@ -48,6 +54,7 @@ public class MongoStorage implements DataStorage {
 			}
 			
 			db = mongoClient.getDatabase(DbName).withWriteConcern(WriteConcern.UNACKNOWLEDGED);
+			logger.log("Database connected");
 			
 			connected = true;
 			return true;
@@ -93,7 +100,7 @@ public class MongoStorage implements DataStorage {
 	}
 
 	@Override
-	public SabreDocument asDocument() {
+	public SabreDocument getDocument() {
 		return new SabreDocument()
 				.append("address", DbAddress)
 				.append("port", DbPort)
@@ -103,7 +110,7 @@ public class MongoStorage implements DataStorage {
 	}
 
 	@Override
-	public Documentable fromDocument(SabreDocument doc) {
+	public MongoStorage loadDocument(SabreDocument doc) {
 		DbAddress = doc.getString("address", "localhost");
 		DbPort = doc.getInteger("port", 27017);
 		DbName = doc.getString("name", "sabre");

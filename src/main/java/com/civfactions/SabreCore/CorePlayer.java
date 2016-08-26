@@ -398,7 +398,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	}
 
 	@Override
-	public SabreDocument asDocument() {
+	public SabreDocument getDocument() {
 		SabreDocument doc = new SabreDocument()
 				.append("_id", getUniqueId().toString())
 				.append("name", getName())
@@ -410,7 +410,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	}
 
 	@Override
-	public CorePlayer fromDocument(SabreDocument doc) {
+	public CorePlayer loadDocument(SabreDocument doc) {
 		firstLogin = doc.getDate("first_login");
 		lastLogin = doc.getDate("last_login");
 		playTime = doc.getLong("play_time", 0);

@@ -18,7 +18,7 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.*;
 
 /**
- * Wrapper class for a MongDB collection
+ * Wrapper class for a MongoDB collection
  * @author Gordon
  *
  * @param <T> The object type
@@ -63,7 +63,7 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 
 	@Override
 	public void insert(final T doc) {		
-		collection.insertOne(new Document(doc.asDocument()));
+		collection.insertOne(new Document(doc.getDocument()));
 		
 	}
 

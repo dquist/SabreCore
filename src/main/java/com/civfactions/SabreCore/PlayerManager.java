@@ -52,9 +52,12 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 		this.data = db.getDataCollection("players", this);
 		this.players.clear();
 
-		for (CorePlayer p : data.readAll()) {
+		Collection<CorePlayer> players = data.readAll();
+		for (CorePlayer p : players) {
 			this.players.put(p.getUniqueId(), p);
 		}
+		
+		sabre.log("Loaded %d unique player records", players.size());
 	}
 	
 	
@@ -199,6 +202,6 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 		UUID uid = UUID.fromString(doc.get("_id").toString());
 		String name = doc.get("name").toString();
 		
-		return new CorePlayer(sabre, data, uid, name).fromDocument(doc);
+		return new CorePlayer(sabre, data, uid, name).loadDocument(doc);
 	}
 }
