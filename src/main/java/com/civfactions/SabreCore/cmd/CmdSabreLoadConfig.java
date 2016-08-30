@@ -1,16 +1,21 @@
 package com.civfactions.SabreCore.cmd;
 
-import com.civfactions.SabreApi.SabrePlugin;
+import com.civfactions.SabreApi.CommandVisibility;
+import com.civfactions.SabreApi.util.Permission;
+import com.civfactions.SabreCore.SabreCorePlugin;
 
-public class CmdLoadConfig extends CoreCommand
+public class CmdSabreLoadConfig extends CoreCommand
 {
-	public CmdLoadConfig(SabrePlugin plugin) {
+	public CmdSabreLoadConfig(SabreCorePlugin plugin) {
 		super(plugin);
 		
 		this.senderMustBePlayer = false;
 		
 		this.aliases.add("load");
 		this.helpShort = "Reloads the plugin configuration";
+		
+		this.permission = Permission.ADMIN.node;
+		this.visibility = CommandVisibility.SECRET;
 	}
 	
 	@Override

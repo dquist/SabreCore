@@ -1,11 +1,11 @@
 package com.civfactions.SabreCore.cmd;
 
 import com.civfactions.SabreApi.SabreCommand;
-import com.civfactions.SabreApi.SabrePlugin;
+import com.civfactions.SabreCore.SabreCorePlugin;
 
-public abstract class CoreCommand extends SabreCommand<SabrePlugin> {
+public abstract class CoreCommand extends SabreCommand<SabreCorePlugin> {
 	
-	public CoreCommand(SabrePlugin plugin) {
+	public CoreCommand(SabreCorePlugin plugin) {
 		super(plugin);
 	}
 }

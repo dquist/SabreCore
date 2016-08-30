@@ -19,35 +19,6 @@ public class CoreConfiguration implements SabreConfig {
 		
 		doc = configurationSectionToDocument(plugin.getConfig());
 	}
-	
-	private SabreDocument configurationSectionToDocument(ConfigurationSection mem) {
-		SabreDocument doc = new SabreDocument();
-		
-		for(Entry<String, Object> e : mem.getValues(false).entrySet()) {
-			if (e.getValue() instanceof ConfigurationSection) {
-				doc.append(e.getKey(), configurationSectionToDocument((ConfigurationSection)e.getValue()));
-			}
-			else {
-				doc.append(e.getKey(), e.getValue());
-			}
-		}
-		
-		return doc;
-	}
-	
-	
-	private ConfigurationSection documentToConfigurationSection(ConfigurationSection mem, SabreDocument doc) {
-		for(Entry<String, Object> e : doc.entrySet()) {
-			if (e.getValue() instanceof SabreDocument) {
-				documentToConfigurationSection(mem.createSection(e.getKey()), (SabreDocument)e.getValue());
-			}
-			else {
-				mem.set(e.getKey(), e.getValue());
-			}
-		}
-		
-		return mem;
-	}
 
 	@Override
 	public SabreDocument getDocument() {
@@ -71,5 +42,44 @@ public class CoreConfiguration implements SabreConfig {
 	@Override
 	public void saveToFile() {
 		saveToFile(doc);
+	}
+	
+	/**
+	 * Recursively converts Bukkit configuration sections into documents
+	 * @param mem The bukkit configuration section
+	 * @return A document containing all the configuration data
+	 */
+	private SabreDocument configurationSectionToDocument(ConfigurationSection mem) {
+		SabreDocument doc = new SabreDocument();
+		
+		for(Entry<String, Object> e : mem.getValues(false).entrySet()) {
+			if (e.getValue() instanceof ConfigurationSection) {
+				doc.append(e.getKey(), configurationSectionToDocument((ConfigurationSection)e.getValue()));
+			}
+			else {
+				doc.append(e.getKey(), e.getValue());
+			}
+		}
+		
+		return doc;
+	}
+	
+	/**
+	 * Recursively adds all document data to a Bukkit configuration section
+	 * @param mem The bukkit configuration section
+	 * @param doc The document object
+	 * @return The resulting configuration section
+	 */
+	private ConfigurationSection documentToConfigurationSection(ConfigurationSection mem, SabreDocument doc) {
+		for(Entry<String, Object> e : doc.entrySet()) {
+			if (e.getValue() instanceof SabreDocument) {
+				documentToConfigurationSection(mem.createSection(e.getKey()), (SabreDocument)e.getValue());
+			}
+			else {
+				mem.set(e.getKey(), e.getValue());
+			}
+		}
+		
+		return mem;
 	}
 }

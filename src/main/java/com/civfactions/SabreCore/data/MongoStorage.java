@@ -35,13 +35,14 @@ public class MongoStorage implements DataStorage {
 		Guard.ArgumentNotNull(logger, "logger");
 		
 		this.logger = logger;
-		
-		// Only log severe messages
-		Logger.getLogger( "org.mongodb.driver" ).setLevel(Level.SEVERE);
 	}
 
 	@Override
 	public boolean connect() {
+		
+		// Only log severe messages
+		Logger.getLogger( "org.mongodb.driver" ).setLevel(Level.SEVERE);
+		
 		try {
 			logger.log("Connecting to database...");
 			

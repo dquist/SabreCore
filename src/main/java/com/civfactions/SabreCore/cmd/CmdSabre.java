@@ -1,12 +1,12 @@
 package com.civfactions.SabreCore.cmd;
 
 import com.civfactions.SabreApi.CommandVisibility;
-import com.civfactions.SabreApi.SabrePlugin;
 import com.civfactions.SabreApi.util.Permission;
+import com.civfactions.SabreCore.SabreCorePlugin;
 
 public class CmdSabre extends CoreCommand {
 	
-	public CmdSabre(SabrePlugin plugin) {
+	public CmdSabre(SabreCorePlugin plugin) {
 		super(plugin);
 
 		this.aliases.add("sabre");
@@ -17,7 +17,10 @@ public class CmdSabre extends CoreCommand {
 		this.visibility = CommandVisibility.SECRET;
 		this.permission = Permission.ADMIN_NODE;
 		
-		this.addSubCommand(new CmdLoadConfig(plugin));
+		this.addSubCommand(new CmdSabreLoadConfig(plugin));
+		this.addSubCommand(new CmdSabreDeletePlayer(plugin));
+		this.addSubCommand(new CmdSabreRenamePlayer(plugin));
+		this.addSubCommand(new CmdSabreRespawn(plugin));
 	}
 
 	@Override

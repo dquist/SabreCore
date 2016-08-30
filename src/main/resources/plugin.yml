@@ -4,4 +4,14 @@ main: ${groupId}.${name}.${name}Plugin
 author: Gordon
 commands:
   sabre:
+    aliases: [s]
+  ban:
+  fly:
+  gm:
+    aliases: [gamemode]
+  give:
+  more:
+  setspawn:
+  unban:
+  vanish:
   

@@ -65,14 +65,14 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	 * Removes a player from all records
 	 * @param player The player to remove
 	 */
-	public void removePlayer(SabrePlayer player) {
+	public void deletePlayer(SabrePlayer player) {
 		Guard.ArgumentNotNull(player, "player");
 		assertValidPlayer(player);
 		
 		onlinePlayers.remove(player.getUniqueId());
 		CorePlayer removed = players.remove(player.getUniqueId());
 		data.remove(removed);
-		sabre.log("Removed player: Name=%s, ID=%s", player.getName(), player.getUniqueId().toString());
+		sabre.log("Deleted player: Name=%s, ID=%s", player.getName(), player.getUniqueId().toString());
 	}
 	
 	
@@ -81,7 +81,7 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	 * @param id The ID of the player
 	 * @return The player instance if it exists
 	 */
-	public SabrePlayer getPlayerById(final UUID uid) {
+	public CorePlayer getPlayerById(final UUID uid) {
 		Guard.ArgumentNotNull(uid, "uid");
 		
 		// Check online players first
@@ -98,7 +98,7 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	 * @param id The name of the player
 	 * @return The player instance if it exists
 	 */
-	public SabrePlayer getPlayerByName(final String name) {
+	public CorePlayer getPlayerByName(final String name) {
 		Guard.ArgumentNotNullOrEmpty(name, "name");
 		
 		// Check online players first

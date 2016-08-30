@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.civfactions.SabreApi.SabrePlayer;
@@ -252,8 +254,19 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Sets the ban status
 	 * @return banned true if the player is banned
 	 */
-	public CorePlayer setBanned(boolean banned) {
+	public CorePlayer setBanned(boolean banned, String reason) {
+		Guard.ArgumentNotNull(banMessage, "banMessage");
+		
 		this.banned = banned;
+		this.banMessage = reason;
+		
+		db.updateField(this, "banned", true);
+		db.updateField(this, "ban_message", banMessage);
+		
+		if (banned && isOnline()) {
+			String fullBanMessage = String.format("%s\n%s", Lang.youAreBanned, reason);
+			bukkitPlayer.kickPlayer(fullBanMessage);
+		}
 		return this;
 	}
 	
@@ -265,18 +278,6 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	@Override
 	public String getBanMessage() {
 		return this.banMessage;
-	}
-	
-	
-	/**
-	 * Sets the ban message
-	 * @return banMessage the ban message
-	 */
-	public CorePlayer setBanMessage(String banMessage) {
-		Guard.ArgumentNotNull(banMessage, "banMessage");
-		
-		this.banMessage = banMessage;
-		return this;
 	}
 	
 	/**
@@ -381,6 +382,30 @@ public class CorePlayer implements SabrePlayer, Documentable {
 			return bukkitPlayer.teleport(location);
 		}
 		return false;
+	}
+	
+	/**
+	 * Sends a player to the ground at a specified location
+	 * @param player The player to move
+	 * @return The final landing location
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	public Location teleportToGround(Location location) {
+		Location l = bukkitPlayer.getLocation();
+		
+		l.getChunk().load();
+		Block block = l.getBlock();
+
+		World world = l.getWorld();
+
+		for(int y = 0 ; y <= l.getBlockY() + 2; y++){
+			block = world.getBlockAt(l.getBlockX(), y, l.getBlockZ());
+			bukkitPlayer.sendBlockChange(block.getLocation(), block.getType(), block.getData());
+		}
+		
+		teleport(block.getLocation());
+		return block.getLocation();
 	}
 
 	@Override

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import com.civfactions.SabreApi.CommandVisibility;
 import com.civfactions.SabreApi.SabreCommand;
-import com.civfactions.SabreApi.SabrePlugin;
+import com.civfactions.SabreCore.SabreCorePlugin;
 
 public class CmdAutoHelp extends CoreCommand
 {
-	public CmdAutoHelp(SabrePlugin plugin) {
+	public CmdAutoHelp(SabreCorePlugin plugin) {
 		super(plugin);
 		
 		this.aliases.add("?");
