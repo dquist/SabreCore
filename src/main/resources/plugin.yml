@@ -2,3 +2,6 @@ name: ${name}
 version: ${version}
 main: ${groupId}.${name}.${name}Plugin
 author: Gordon
+commands:
+  sabre:
+  

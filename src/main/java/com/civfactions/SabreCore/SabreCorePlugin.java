@@ -3,11 +3,17 @@ package com.civfactions.SabreCore;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.civfactions.SabreApi.SabreCommand;
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabrePlugin;
 import com.civfactions.SabreApi.data.DataAccess;
-import com.civfactions.SabreApi.data.SabreDocument;
+import com.civfactions.SabreApi.data.SabreConfig;
 import com.civfactions.SabreApi.util.TextFormatter;
+import com.civfactions.SabreCore.cmd.CmdAutoHelp;
+import com.civfactions.SabreCore.cmd.CmdSabre;
+import com.civfactions.SabreCore.data.CoreConfiguration;
 import com.civfactions.SabreCore.data.MongoStorage;
 import com.civfactions.SabreCore.util.TextUtil;
 
@@ -18,6 +24,7 @@ import com.civfactions.SabreCore.util.TextUtil;
 public class SabreCorePlugin extends SabrePlugin {
 	
 	private final TextUtil textUtil = new TextUtil();
+	private final CmdAutoHelp autoHelp = new CmdAutoHelp(this);
 	private DataStorage storage;
 	private PlayerManager pm;
 	
@@ -28,13 +35,20 @@ public class SabreCorePlugin extends SabrePlugin {
 	public void onEnable() {
 		super.onEnable();
 		
-		// TODO load config
-		SabreDocument config = new SabreDocument();
-		
 		storage = new MongoStorage(this);
 		pm = new PlayerManager(this, storage);
 		
-		if (storage.loadDocument(config).connect()) {
+		// Register core command
+		registerCommand(new CmdSabre(this));
+		
+		// Register configuration objects
+		registerConfigObject(storage);
+		registerConfigObject(textUtil);
+		
+		// Loads data into all configuration objects
+		readConfiguration();
+		
+		if (storage.connect()) {
 			pm.load();
 		}
 		
@@ -80,5 +94,15 @@ public class SabreCorePlugin extends SabrePlugin {
 	@Override
 	public TextFormatter getFormatter() {
 		return this.textUtil;
+	}
+
+	@Override
+	public SabreConfig getSabreConfig(JavaPlugin plugin) {
+		return new CoreConfiguration(plugin);
+	}
+	
+	@Override
+	public SabreCommand<?> getAutoHelp() {
+		return autoHelp;
 	}
 }

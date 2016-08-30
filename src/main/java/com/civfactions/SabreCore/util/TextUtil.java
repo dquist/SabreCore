@@ -9,30 +9,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 import com.civfactions.SabreApi.Named;
+import com.civfactions.SabreApi.data.Documentable;
+import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.TextFormatter;
 
-public class TextUtil implements TextFormatter {	
-	public Map<String, String> tags;
+public class TextUtil implements TextFormatter, Documentable {	
+	
+	private final Map<String, String> tags = new HashMap<String, String>();
 	
 	public TextUtil() {
-		this.tags = new HashMap<String, String>();
-		
-		createTags();
-	}
-	
-	private void createTags() {
-		tags.put("l", TextUtil.parseColor("<green>"));		// logo
-		tags.put("a", TextUtil.parseColor("<gold>"));		// art
-		tags.put("n", TextUtil.parseColor("<silver>"));		// notice
-		tags.put("i", TextUtil.parseColor("<yellow>"));		// info
-		tags.put("g", TextUtil.parseColor("<lime>"));		// good
-		tags.put("b", TextUtil.parseColor("<rose>"));		// bad
-		tags.put("h", TextUtil.parseColor("<pink>"));		// highlight
-		tags.put("c", TextUtil.parseColor("<aqua>"));		// parameter
-		tags.put("p", TextUtil.parseColor("<teal>"));		// parameter
-		tags.put("w", TextUtil.parseColor("<white>"));		// parameter
-		tags.put("lp", TextUtil.parseColor("<lpurple>"));
 	}
 	
 	// -------------------------------------------- //
@@ -219,6 +205,7 @@ public class TextUtil implements TextFormatter {
 			return parseTags(colorCode)+center;
 	}
 	
+	@Override
 	public ArrayList<String> getPage(List<String> lines, int pageHumanBased, String title)
 	{
 		ArrayList<String> ret = new ArrayList<String>();
@@ -347,5 +334,28 @@ public class TextUtil implements TextFormatter {
 			}
 		}
 		return (T)ret;
+	}
+
+	@Override
+	public String getDocumentKey() {
+		return "text";
+	}
+
+	@Override
+	public SabreDocument getDocument() {
+		return null;
+	}
+
+	@Override
+	public Documentable loadDocument(SabreDocument doc) {
+		SabreDocument colors = doc.getDocument("color_tags");
+		if (tags != null) {
+			for (Entry<String, Object> e : colors.entrySet()) {
+				if (e.getValue() instanceof String) {
+					tags.put(e.getKey(), TextUtil.parseColor((String)e.getValue()));
+				}
+			}
+		}
+		return this;
 	}
 }

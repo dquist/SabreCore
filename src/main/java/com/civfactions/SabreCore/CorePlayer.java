@@ -396,6 +396,16 @@ public class CorePlayer implements SabrePlayer, Documentable {
 			// TODO
 		}
 	}
+	
+	
+	/**
+	 * Gets the player ID
+	 * @return The player ID
+	 */
+	@Override
+	public String getDocumentKey() {
+		return uid.toString();
+	}
 
 	@Override
 	public SabreDocument getDocument() {

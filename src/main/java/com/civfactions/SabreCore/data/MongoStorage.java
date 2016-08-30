@@ -2,12 +2,10 @@ package com.civfactions.SabreCore.data;
 
 import com.civfactions.SabreCore.DataStorage;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoDatabase;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +25,7 @@ public class MongoStorage implements DataStorage {
 	private String DbName;
 	private String DbUser;
 	private String DbPassword;
+	private int dbTimeoutms;
 	
 	private boolean connected;
 	private MongoClient mongoClient;
@@ -46,14 +45,18 @@ public class MongoStorage implements DataStorage {
 		try {
 			logger.log("Connecting to database...");
 			
-			if (DbUser.isEmpty()) {
-				mongoClient = new MongoClient(new ServerAddress(DbAddress, DbPort));
-			} else {
-				MongoCredential credential = MongoCredential.createCredential(DbUser, DbName, DbPassword.toCharArray());
-				mongoClient = new MongoClient(new ServerAddress(DbAddress, DbPort), Arrays.asList(credential));
+			String connectionString = "mongodb://";
+			
+			if (!DbUser.isEmpty()) {
+				connectionString += String.format("%s:%s@", DbUser, DbPassword);
 			}
 			
+			connectionString += String.format("%s:%d/?connectTimeoutMS=%d&socketTimeoutMS=%d", DbAddress, DbPort, dbTimeoutms, dbTimeoutms);
+			
+			mongoClient = new MongoClient(new MongoClientURI(connectionString));
+			
 			db = mongoClient.getDatabase(DbName).withWriteConcern(WriteConcern.UNACKNOWLEDGED);
+			
 			logger.log("Database connected");
 			
 			connected = true;
@@ -95,7 +98,7 @@ public class MongoStorage implements DataStorage {
 	}
 
 	@Override
-	public Object getUniqueId() {
+	public String getDocumentKey() {
 		return "database";
 	}
 
@@ -106,7 +109,8 @@ public class MongoStorage implements DataStorage {
 				.append("port", DbPort)
 				.append("name", DbName)
 				.append("user", DbUser)
-				.append("pass", DbPassword);
+				.append("pass", DbPassword)
+				.append("timeout_ms", dbTimeoutms);
 	}
 
 	@Override
@@ -116,6 +120,7 @@ public class MongoStorage implements DataStorage {
 		DbName = doc.getString("name", "sabre");
 		DbUser = doc.getString("user", "");
 		DbPassword = doc.getString("pass", "");
+		dbTimeoutms = doc.getInteger("timeout_ms", 3000);
 		return this;
 	}
 }

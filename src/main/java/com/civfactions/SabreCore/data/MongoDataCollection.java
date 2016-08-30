@@ -69,11 +69,11 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 
 	@Override
 	public void updateField(final T doc, final String key, final Object value) {
-		collection.updateOne(eq("_id", doc.getUniqueId()), set(key, value));
+		collection.updateOne(eq("_id", doc.getDocumentKey()), set(key, value));
 	}
 
 	@Override
 	public void remove(final T doc) {
-		collection.deleteOne(eq("_id", doc.getUniqueId()));
+		collection.deleteOne(eq("_id", doc.getDocumentKey()));
 	}
 }
