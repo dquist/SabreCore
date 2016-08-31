@@ -17,7 +17,6 @@ import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.Permission;
 import com.civfactions.SabreApi.util.SabreUtil;
-import com.civfactions.SabreCore.data.StoredValueMap;
 
 /**
  * Represents a player that has joined the server and may or may not be online
@@ -50,9 +49,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	// The player's bed location
 	private Location bedLocation;
 	
-	
-	private final StoredValueMap dataStore = new StoredValueMap();
-	
+	private SabreDocument storedValues = new SabreDocument();	
 	
 	/**
 	 * Creates a new SabrePlayer instance
@@ -110,7 +107,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Sets the player name
 	 * @param name The player name
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		Guard.ArgumentNotNullOrEmpty(name, "name");
 		
 		this.name = name;
@@ -139,7 +136,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * @param bukkitPlayer The player instance
 	 */
 	@Override
-	public void setBukkitPlayer(Player bukkitPlayer) {
+	public void setBukkitPlayer(final Player bukkitPlayer) {
 		this.bukkitPlayer = bukkitPlayer;
 	}
 	
@@ -168,7 +165,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Sets the first login time
 	 * @param firstLogin The first login time
 	 */
-	public CorePlayer setFirstLogin(Date firstLogin) {
+	public CorePlayer setFirstLogin(final Date firstLogin) {
 		Guard.ArgumentNotNull(firstLogin, "firstLogin");
 		
 		this.firstLogin = firstLogin;
@@ -190,7 +187,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Sets the last login time
 	 * @param lastLogin The first login time
 	 */
-	public CorePlayer setLastLogin(Date lastLogin) {
+	public CorePlayer setLastLogin(final Date lastLogin) {
 		Guard.ArgumentNotNull(lastLogin, "lastLogin");
 		
 		this.lastLogin = lastLogin;
@@ -225,7 +222,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Sets the total play time
 	 * @param lastLogin The total play time
 	 */
-	public CorePlayer setPlaytime(long playTime) {
+	public CorePlayer setPlaytime(final long playTime) {
 		this.playTime = playTime;
 		return this;
 	}
@@ -235,7 +232,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Adds to the total play time
 	 * @param lastLogin The total play time
 	 */
-	public void addPlayTime(long playTime) {
+	public void addPlayTime(final long playTime) {
 		this.playTime += playTime;
 	}
 	
@@ -254,7 +251,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Sets the ban status
 	 * @return banned true if the player is banned
 	 */
-	public CorePlayer setBanned(boolean banned, String reason) {
+	public CorePlayer setBanned(final boolean banned, final String reason) {
 		Guard.ArgumentNotNull(banMessage, "banMessage");
 		
 		this.banned = banned;
@@ -286,7 +283,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * @param args
 	 */
 	@Override
-	public void msg(String str, Object... args) {
+	public void msg(final String str, final Object... args) {
 		if (str == null || str == "") {
 			return; // Silently ignore null or empty strings
 		}
@@ -304,7 +301,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * @return The distance the players are away from each other
 	 */
 	@Override
-	public int getDistanceFrom(SabrePlayer other) {
+	public int getDistanceFrom(final SabrePlayer other) {
 		Guard.ArgumentNotNull(other, "other");
 		
 		if (!isOnline() || !other.isOnline()) {
@@ -335,7 +332,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * @param vanished The new vanished state
 	 */
 	@Override
-	public CorePlayer setVanished(boolean vanished) {
+	public CorePlayer setVanished(final boolean vanished) {
 		this.vanished = vanished;
 		return this;
 	}
@@ -355,7 +352,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * Gets the bed location
 	 * @param bedLocation The bed location
 	 */
-	public CorePlayer setBedLocation(Location bedLocation) {
+	public CorePlayer setBedLocation(final Location bedLocation) {
 		this.bedLocation = bedLocation;
 		return this;
 	}
@@ -375,7 +372,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 * @return True if successful
 	 */
 	@Override
-	public boolean teleport(Location location) {
+	public boolean teleport(final Location location) {
 		Guard.ArgumentNotNull(location, "location");
 		
 		if (isOnline()) {
@@ -391,7 +388,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	 */
 	@SuppressWarnings("deprecation")
 	@Override
-	public Location teleportToGround(Location location) {
+	public Location teleportToGround(final Location location) {
 		Location l = bukkitPlayer.getLocation();
 		
 		l.getChunk().load();
@@ -409,19 +406,23 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	}
 
 	@Override
-	public <T> T getDataValue(String key) {
-		return dataStore.getDataValue(key);
+	public <T> T getValue(final String key) {
+		return storedValues.getRaw(key);
 	}
 
 	@Override
-	public <T> void setDataValue(String key, T value, boolean persist) {
-		dataStore.setDataValue(key, value);
+	public <T> void setValue(final String key, final T value, final boolean persist) {
+		storedValues.setRaw(key, value);
 		
 		if (persist) {
-			// TODO
+			db.updateField(this, key, value);
 		}
 	}
-	
+
+	@Override
+	public boolean containsValue(String key) {
+		return storedValues.containsField(key);
+	}
 	
 	/**
 	 * Gets the player ID
@@ -445,9 +446,9 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	}
 
 	@Override
-	public CorePlayer loadDocument(SabreDocument doc) {
-		firstLogin = doc.getDate("first_login");
-		lastLogin = doc.getDate("last_login");
+	public CorePlayer loadDocument(final SabreDocument doc) {
+		firstLogin = doc.getDate("first_login", firstLogin);
+		lastLogin = doc.getDate("last_login", lastLogin);
 		playTime = doc.getLong("play_time", 0);
 		banned = doc.getBoolean("banned", false);
 		banMessage = doc.getString("ban_message", "");
@@ -456,6 +457,8 @@ public class CorePlayer implements SabrePlayer, Documentable {
 			bedLocation = SabreUtil.deserializeLocation(doc.getDocument("bed"));
 		}
 		
+		// The rest of the values will be stored here
+		storedValues = new SabreDocument(doc);
 		return this;
 	}
 }
