@@ -85,4 +85,15 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 	public void remove(final T doc) {
 		collection.deleteOne(eq("_id", doc.getDocumentKey()));
 	}
+
+	@Override
+	public void addListItem(T doc, String key, Object value) {
+		collection.updateOne(eq("_id", doc.getDocumentKey()), push(key, value));
+		
+	}
+
+	@Override
+	public void removeListItem(T doc, String key, Object value) {
+		collection.updateOne(eq("_id", doc.getDocumentKey()), pull(key, value));
+	}
 }
