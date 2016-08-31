@@ -49,7 +49,7 @@ public class CorePlayer implements SabrePlayer, Documentable {
 	// The player's bed location
 	private Location bedLocation;
 	
-	private SabreDocument storedValues = new SabreDocument();	
+	private SabreDocument storedValues = new SabreDocument();
 	
 	/**
 	 * Creates a new SabrePlayer instance
@@ -435,14 +435,14 @@ public class CorePlayer implements SabrePlayer, Documentable {
 
 	@Override
 	public SabreDocument getDocument() {
-		SabreDocument doc = new SabreDocument()
-				.append("_id", getUniqueId().toString())
-				.append("name", getName())
-				.append("first_login", getFirstLogin())
-				.append("last_login", getLastLogin())
-				.append("play_time", getPlaytime());
+		storedValues
+			.append("_id", getUniqueId().toString())
+			.append("name", getName())
+			.append("first_login", getFirstLogin())
+			.append("last_login", getLastLogin())
+			.append("play_time", getPlaytime());
 		
-		return doc;
+		return storedValues;
 	}
 
 	@Override

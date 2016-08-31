@@ -62,6 +62,15 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 	}
 
 	@Override
+	public T readDocument(String key, Object value) {
+		Document first = collection.find(eq(key, value)).first();
+		if (first == null) {
+			return null;
+		}
+		return factory.createInstance(new SabreDocument(first));
+	}
+
+	@Override
 	public void insert(final T doc) {		
 		collection.insertOne(new Document(doc.getDocument()));
 		

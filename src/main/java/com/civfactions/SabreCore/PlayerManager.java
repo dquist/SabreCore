@@ -9,9 +9,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.data.DataCollection;
+import com.civfactions.SabreApi.data.DataStorage;
 import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.data.SabreObjectFactory;
 import com.civfactions.SabreApi.SabreApi;
@@ -21,7 +23,7 @@ import com.civfactions.SabreApi.util.Guard;
  * Class for managing all the player records
  * @author Gordon
  */
-public class PlayerManager implements SabreObjectFactory<CorePlayer> {
+public class PlayerManager implements SabreObjectFactory<CorePlayer>, Listener {
 	
 	private final SabreApi sabre;
 	private final DataStorage db;
@@ -33,8 +35,10 @@ public class PlayerManager implements SabreObjectFactory<CorePlayer> {
 	
 	/**
 	 * Creates a new PlayerManager instance 
+	 * @param sabre The Sabre API
+	 * @param db The database object
 	 */
-	public PlayerManager(final SabreApi sabre, final DataStorage db) {
+	PlayerManager(final SabreApi sabre, final DataStorage db) {
 		Guard.ArgumentNotNull(sabre, "sabre");
 		Guard.ArgumentNotNull(db, "db");
 		

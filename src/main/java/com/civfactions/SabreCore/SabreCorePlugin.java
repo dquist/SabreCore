@@ -13,7 +13,7 @@ import com.civfactions.SabreApi.PlayerVanisher;
 import com.civfactions.SabreApi.SabreCommand;
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabrePlugin;
-import com.civfactions.SabreApi.data.DataAccess;
+import com.civfactions.SabreApi.data.DataStorage;
 import com.civfactions.SabreApi.data.SabreConfig;
 import com.civfactions.SabreApi.util.TextFormatter;
 import com.civfactions.SabreCore.cmd.CmdAutoHelp;
@@ -38,6 +38,7 @@ public class SabreCorePlugin extends SabrePlugin {
 	
 	private final DataStorage storage = new MongoStorage(this);
 	private final PlayerManager pm = new PlayerManager(this, storage);
+	private final BlockManager bm = new BlockManager(this, storage);
 	private final CorePlayerSpawner spawner = new CorePlayerSpawner(this);
 	private final CoreVanisher vanisher = new CoreVanisher();
 	private final CmdAutoHelp autoHelp = new CmdAutoHelp(this);
@@ -72,6 +73,9 @@ public class SabreCorePlugin extends SabrePlugin {
 			pm.load();
 		}
 		
+		registerEvents(pm);
+		registerEvents(bm);
+		
 		super.postEnable();
 	}
 	
@@ -82,7 +86,7 @@ public class SabreCorePlugin extends SabrePlugin {
 	}
 
 	@Override
-	public DataAccess getStorage() {
+	public DataStorage getStorage() {
 		return storage;
 	}
 

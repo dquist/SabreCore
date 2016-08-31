@@ -1,6 +1,5 @@
 package com.civfactions.SabreCore.data;
 
-import com.civfactions.SabreCore.DataStorage;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
@@ -11,6 +10,7 @@ import java.util.logging.Logger;
 
 import com.civfactions.SabreApi.SabreLogger;
 import com.civfactions.SabreApi.data.DataCollection;
+import com.civfactions.SabreApi.data.DataStorage;
 import com.civfactions.SabreApi.data.Documentable;
 import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.data.SabreObjectFactory;
