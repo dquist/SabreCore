@@ -20,12 +20,12 @@ public class MongoStorage implements DataStorage {
 	
 	private final SabreLogger logger;
 	
-	private String DbAddress;
-	private int DbPort;
-	private String DbName;
-	private String DbUser;
-	private String DbPassword;
-	private int dbTimeoutms;
+	private String DbAddress = "localhost";
+	private int DbPort = 27017;
+	private String DbName = "sabre";
+	private String DbUser = "";
+	private String DbPassword = "";
+	private int dbTimeoutms = 3000;
 	
 	private boolean connected;
 	private MongoClient mongoClient;
@@ -116,12 +116,12 @@ public class MongoStorage implements DataStorage {
 
 	@Override
 	public MongoStorage loadDocument(SabreDocument doc) {
-		DbAddress = doc.getString("address", "localhost");
-		DbPort = doc.getInteger("port", 27017);
-		DbName = doc.getString("name", "sabre");
-		DbUser = doc.getString("user", "");
-		DbPassword = doc.getString("pass", "");
-		dbTimeoutms = doc.getInteger("timeout_ms", 3000);
+		DbAddress = doc.getString("address", DbAddress);
+		DbPort = doc.getInteger("port", DbPort);
+		DbName = doc.getString("name", DbName);
+		DbUser = doc.getString("user", DbUser);
+		DbPassword = doc.getString("pass", DbPassword);
+		dbTimeoutms = doc.getInteger("timeout_ms", dbTimeoutms);
 		return this;
 	}
 }

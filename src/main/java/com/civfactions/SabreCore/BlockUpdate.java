@@ -21,16 +21,4 @@ public class BlockUpdate implements FieldUpdate<CoreBlock> {
 	public void updateField(final CoreBlock b, final String key, final Object value) {
 		data.updateField(chunks, String.format("blocks.%s.%s", b.getDocumentKey(), key), value);
 	}
-
-	@Override
-	public void addListItem(CoreBlock doc, String key, Object value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void removeListItem(CoreBlock doc, String key, Object value) {
-		// TODO Auto-generated method stub
-		
-	}
 }

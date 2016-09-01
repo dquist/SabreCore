@@ -9,6 +9,7 @@ import org.bson.Document;
 import com.civfactions.SabreApi.SabreLogger;
 import com.civfactions.SabreApi.data.DataCollection;
 import com.civfactions.SabreApi.data.Documentable;
+import com.civfactions.SabreApi.data.ListCollection;
 import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.data.SabreObjectFactory;
 import com.civfactions.SabreApi.util.Guard;
@@ -35,7 +36,7 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 	 * @param factory The factory for creating new object instances
 	 * @param logger The logger instance
 	 */
-	MongoDataCollection(final MongoCollection<Document> collection, final SabreObjectFactory<T> factory, SabreLogger logger) {
+	MongoDataCollection(final MongoCollection<Document> collection, final SabreObjectFactory<T> factory, final SabreLogger logger) {
 		Guard.ArgumentNotNull(collection, "collection");
 		Guard.ArgumentNotNull(factory, "factory");
 		Guard.ArgumentNotNull(logger, "logger");
@@ -71,7 +72,7 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 	}
 
 	@Override
-	public void insert(final T doc) {		
+	public void insert(final T doc) {
 		collection.insertOne(new Document(doc.getDocument()));
 		
 	}
@@ -87,13 +88,12 @@ class MongoDataCollection<T extends Documentable> implements DataCollection<T> {
 	}
 
 	@Override
-	public void addListItem(T doc, String key, Object value) {
-		collection.updateOne(eq("_id", doc.getDocumentKey()), push(key, value));
-		
+	public <T2 extends Documentable> ListCollection<T2> getCollectionList(final String name) {
+		return new MongoListCollection<T2>(collection, name, logger);
 	}
 
 	@Override
-	public void removeListItem(T doc, String key, Object value) {
-		collection.updateOne(eq("_id", doc.getDocumentKey()), pull(key, value));
+	public void drop() {
+		collection.drop();
 	}
 }

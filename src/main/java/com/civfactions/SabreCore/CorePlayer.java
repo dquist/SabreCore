@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import com.civfactions.SabreApi.SabrePlayer;
 import com.civfactions.SabreApi.SabreApi;
 import com.civfactions.SabreApi.data.DataCollection;
-import com.civfactions.SabreApi.data.Documentable;
 import com.civfactions.SabreApi.data.SabreDocument;
 import com.civfactions.SabreApi.util.Guard;
 import com.civfactions.SabreApi.util.Permission;
@@ -22,7 +21,7 @@ import com.civfactions.SabreApi.util.SabreUtil;
  * Represents a player that has joined the server and may or may not be online
  * @author GFQ
  */
-public class CorePlayer implements SabrePlayer, Documentable {
+public class CorePlayer implements SabrePlayer {
 	
 	private final SabreApi sabre;
 	private final DataCollection<CorePlayer> db;
